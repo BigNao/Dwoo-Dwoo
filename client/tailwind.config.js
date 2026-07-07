@@ -25,6 +25,11 @@ export default {
           light: "#FEE2E2",
         },
         background: "#F8FAFC",
+        offwhite: {
+          DEFAULT: "#FAFAF8",
+          surface: "#F3F3F0",
+          recessed: "#ECECE8",
+        },
         card: "#FFFFFF",
         border: "#E2E8F0",
         ink: "#0F172A",
