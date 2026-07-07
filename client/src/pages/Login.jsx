@@ -25,8 +25,16 @@ export default function Login() {
 
     setSubmitting(true);
     try {
-      await login({ email: email.trim(), password });
-      const redirectTo = location.state?.from || "/my-reports";
+      const { profile } = await login({ email: email.trim(), password });
+      
+      // Redirect based on role
+      if (profile?.role === "admin") {
+        // Admins should use the admin login portal
+        setFormError("Administrators must log in at /admin/login");
+        return;
+      }
+      
+      const redirectTo = location.state?.from || "/citizen";
       navigate(redirectTo);
     } catch (err) {
       setFormError(mapFirebaseError(err.code));

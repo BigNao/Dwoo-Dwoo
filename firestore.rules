@@ -13,6 +13,12 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function isCitizen() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'citizen';
+    }
+
     // reports: anyone can create (anonymous or registered citizen reporting).
     // Reads are restricted — the backend's track-by-reference and admin
     // list endpoints use the Admin SDK, which bypasses these rules.
@@ -26,11 +32,20 @@ service cloud.firestore {
 
     // users: each citizen manages their own profile document; only an
     // admin (or the backend, via the Admin SDK) may change roles.
+    // CRITICAL: Role can never be changed via client SDK - only Admin SDK
     match /users/{userId} {
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Users can only create their own document
+      allow create: if isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.role == 'citizen'; // Force role to citizen on create
+      
+      // Users can read their own profile (needed for auth context)
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      
+      // Users can update their own profile but CANNOT change role
       allow update: if isSignedIn() && request.auth.uid == userId &&
-        request.resource.data.role == resource.data.role; // can't self-promote
+        request.resource.data.role == resource.data.role; // Role must remain unchanged
+      
+      // No deletes via client SDK
       allow delete: if false;
     }
 

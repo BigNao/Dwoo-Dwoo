@@ -5,8 +5,8 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#1E40AF",
-          hover: "#1D4ED8",
+          DEFAULT: "#0f0f2e",
+          hover: "#0e0e17",
           light: "#DBEAFE",
         },
         secondary: {

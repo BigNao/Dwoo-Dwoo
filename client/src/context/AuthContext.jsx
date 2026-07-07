@@ -44,13 +44,14 @@ export function AuthProvider({ children }) {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(credential.user, { displayName: name });
 
+    // CRITICAL: Role is hardcoded to "citizen" - no way to create admin via registration
     const profile = {
       user_id: credential.user.uid,
       display_name: name,
       email_address: email,
       registration_timestamp: serverTimestamp(),
       report_count: 0,
-      role: "citizen",
+      role: "citizen", // Always citizen - enforced on client
     };
 
     await setDoc(doc(db, "users", credential.user.uid), profile);
@@ -63,8 +64,9 @@ export function AuthProvider({ children }) {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     await credential.user.getIdToken();
     const snap = await getDoc(doc(db, "users", credential.user.uid));
-    setUserProfile(snap.exists() ? snap.data() : null);
-    return credential.user;
+    const profile = snap.exists() ? snap.data() : null;
+    setUserProfile(profile);
+    return { user: credential.user, profile };
   }
 
   async function logout() {
@@ -73,11 +75,13 @@ export function AuthProvider({ children }) {
   }
 
   const isAdmin = userProfile?.role === "admin";
+  const isCitizen = userProfile?.role === "citizen";
 
   const value = {
     currentUser,
     userProfile,
     isAdmin,
+    isCitizen,
     loading,
     register,
     login,

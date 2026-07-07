@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing.jsx";
 import ReportForm from "./pages/ReportForm.jsx";
@@ -7,25 +7,59 @@ import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import MyReports from "./pages/MyReports.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
-import PrivateRoute from "./components/PrivateRoute.jsx";
+import AdminLogin from "./pages/admin/AdminLogin.jsx";
+import AdminRoute from "./components/PrivateRoute.jsx";
+import CitizenRoute from "./components/CitizenRoute.jsx";
+
+const CitizenDashboard = lazy(() => import("./features/citizen/pages/Dashboard.jsx"));
+const CitizenReports = lazy(() => import("./features/citizen/pages/Reports.jsx"));
+const CitizenReportDetails = lazy(() => import("./features/citizen/pages/ReportDetails.jsx"));
+const CitizenNotifications = lazy(() => import("./features/citizen/pages/Notifications.jsx"));
+const CitizenProfile = lazy(() => import("./features/citizen/pages/Profile.jsx"));
+const CitizenSettings = lazy(() => import("./features/citizen/pages/Settings.jsx"));
 
 export default function App() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Landing />} />
       <Route path="/report" element={<ReportForm />} />
       <Route path="/track" element={<TrackReport />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/my-reports" element={<MyReports />} />
+
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
       <Route
         path="/admin/*"
         element={
-          <PrivateRoute>
+          <AdminRoute>
             <AdminDashboard />
-          </PrivateRoute>
+          </AdminRoute>
         }
       />
+
+      {/* Citizen Routes */}
+      <Route
+        path="/citizen/*"
+        element={
+          <CitizenRoute>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background">Loading...</div>}>
+              <Routes>
+                <Route index element={<CitizenDashboard />} />
+                <Route path="reports" element={<CitizenReports />} />
+                <Route path="reports/:id" element={<CitizenReportDetails />} />
+                <Route path="notifications" element={<CitizenNotifications />} />
+                <Route path="profile" element={<CitizenProfile />} />
+                <Route path="settings" element={<CitizenSettings />} />
+              </Routes>
+            </Suspense>
+          </CitizenRoute>
+        }
+      />
+
+      {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
