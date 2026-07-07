@@ -17,12 +17,12 @@ import api from "../../utils/api.js";
 import { INCIDENT_MARKER_COLORS, STATUS_LABELS } from "../../utils/constants.js";
 
 const STATUS_CHART_COLORS = {
-  pending: "#9CA3AF",
-  under_review: "#EAB308",
-  verified: "#3B82F6",
-  under_investigation: "#F97316",
-  resolved: "#1F5C4B",
-  rejected: "#B7332A",
+  pending: "#475569",
+  under_review: "#F59E0B",
+  verified: "#1E40AF",
+  under_investigation: "#F59E0B",
+  resolved: "#059669",
+  rejected: "#DC2626",
 };
 
 function toDateInputValue(date) {
@@ -109,39 +109,39 @@ export default function Analytics() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <header className="flex items-center justify-between px-8 h-16 border-b border-canvas/10">
+      <header className="flex items-center justify-between px-8 h-16 border-b border-white/10">
         <h1 className="font-display text-xl font-semibold">Analytics</h1>
         <div className="flex items-center gap-3 text-sm">
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="rounded-sign bg-asphalt-light border border-canvas/20 px-3 py-1.5"
+            className="rounded-sign bg-asphalt-light border border-white/20 px-3 py-1.5"
           />
-          <span className="text-canvas/40">to</span>
+          <span className="text-white/40">to</span>
           <input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="rounded-sign bg-asphalt-light border border-canvas/20 px-3 py-1.5"
+            className="rounded-sign bg-asphalt-light border border-white/20 px-3 py-1.5"
           />
         </div>
       </header>
 
       <div className="p-8 space-y-8">
-        {loading && <p className="text-sm text-canvas/50">Loading analytics…</p>}
-        {error && <p className="text-sm text-kente">{error}</p>}
+        {loading && <p className="text-sm text-white/50">Loading analytics…</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
         {!loading && !error && (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <SummaryCard label="Total Reports" value={summary.total} accent="bg-gold text-ink" />
-              <SummaryCard label="Verified Reports" value={summary.verified} accent="bg-blue-500 text-white" />
-              <SummaryCard label="Resolved Reports" value={summary.resolved} accent="bg-forest text-white" />
+              <SummaryCard label="Total Reports" value={summary.total} accent="bg-accent text-ink" />
+              <SummaryCard label="Verified Reports" value={summary.verified} accent="bg-primary text-white" />
+              <SummaryCard label="Resolved Reports" value={summary.resolved} accent="bg-secondary text-white" />
               <SummaryCard
                 label="Pending / Under Review"
                 value={summary.pendingOrReview}
-                accent="bg-yellow-500 text-ink"
+                accent="bg-accent text-ink"
               />
             </div>
 
@@ -150,12 +150,12 @@ export default function Analytics() {
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={byCategory} margin={{ left: 0, right: 16 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
-                    <XAxis dataKey="name" tick={{ fill: "#FAF7F2", fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={70} />
-                    <YAxis tick={{ fill: "#FAF7F2", fontSize: 11 }} allowDecimals={false} />
-                    <Tooltip contentStyle={{ background: "#1C1E21", border: "none", color: "#FAF7F2" }} />
+                    <XAxis dataKey="name" tick={{ fill: "#F8FAFC", fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={70} />
+                    <YAxis tick={{ fill: "#F8FAFC", fontSize: 11 }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ background: "#0F172A", border: "none", color: "#F8FAFC" }} />
                     <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                       {byCategory.map((entry) => (
-                        <Cell key={entry.name} fill={INCIDENT_MARKER_COLORS[entry.name] || "#D4A017"} />
+                        <Cell key={entry.name} fill={INCIDENT_MARKER_COLORS[entry.name] || "#F59E0B"} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -166,10 +166,10 @@ export default function Analytics() {
                 <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={byDay} margin={{ left: 0, right: 16 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
-                    <XAxis dataKey="day" tick={{ fill: "#FAF7F2", fontSize: 10 }} />
-                    <YAxis tick={{ fill: "#FAF7F2", fontSize: 11 }} allowDecimals={false} />
-                    <Tooltip contentStyle={{ background: "#1C1E21", border: "none", color: "#FAF7F2" }} />
-                    <Line type="monotone" dataKey="count" stroke="#D4A017" strokeWidth={2} dot={false} />
+                    <XAxis dataKey="day" tick={{ fill: "#F8FAFC", fontSize: 10 }} />
+                    <YAxis tick={{ fill: "#F8FAFC", fontSize: 11 }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ background: "#0F172A", border: "none", color: "#F8FAFC" }} />
+                    <Line type="monotone" dataKey="count" stroke="#F59E0B" strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -179,10 +179,10 @@ export default function Analytics() {
                   <PieChart>
                     <Pie data={byStatus} dataKey="value" nameKey="name" outerRadius={100} label>
                       {byStatus.map((entry) => (
-                        <Cell key={entry.status} fill={STATUS_CHART_COLORS[entry.status] || "#9CA3AF"} />
+                        <Cell key={entry.status} fill={STATUS_CHART_COLORS[entry.status] || "#475569"} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ background: "#1C1E21", border: "none", color: "#FAF7F2" }} />
+                    <Tooltip contentStyle={{ background: "#0F172A", border: "none", color: "#F8FAFC" }} />
                   </PieChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -197,7 +197,7 @@ export default function Analytics() {
 function SummaryCard({ label, value, accent }) {
   return (
     <div className="rounded-sign bg-asphalt-light p-5">
-      <p className="text-xs font-mono uppercase tracking-wide text-canvas/50 mb-3">{label}</p>
+      <p className="text-xs font-mono uppercase tracking-wide text-white/50 mb-3">{label}</p>
       <p className={`inline-flex text-2xl font-display font-semibold px-3 py-1 rounded-sign ${accent}`}>
         {value}
       </p>

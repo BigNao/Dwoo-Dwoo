@@ -12,7 +12,7 @@ export default function PrivateRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-asphalt text-canvas">
+      <div className="min-h-screen flex items-center justify-center bg-asphalt text-white">
         <p className="font-mono text-sm tracking-wide">Checking credentials…</p>
       </div>
     );

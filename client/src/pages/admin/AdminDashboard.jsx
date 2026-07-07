@@ -15,10 +15,10 @@ export default function AdminDashboard() {
   const { userProfile, logout } = useAuth();
 
   return (
-    <div className="min-h-screen bg-asphalt text-canvas flex">
-      <aside className="w-60 shrink-0 border-r border-canvas/10 flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-canvas/10">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-sign bg-gold text-ink font-bold mr-2">
+    <div className="min-h-screen bg-asphalt text-white flex">
+      <aside className="w-60 shrink-0 border-r border-white/10 flex flex-col">
+        <div className="h-16 flex items-center px-6 border-b border-white/10">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-sign bg-accent text-ink font-bold mr-2">
             K
           </span>
           <span className="font-display font-semibold">KwansoDwoo</span>
@@ -32,7 +32,7 @@ export default function AdminDashboard() {
               end={item.end}
               className={({ isActive }) =>
                 `block px-4 py-2.5 rounded-sign text-sm font-medium transition-colors ${
-                  isActive ? "bg-gold text-ink" : "text-canvas/70 hover:bg-asphalt-light hover:text-canvas"
+                  isActive ? "bg-accent text-ink" : "text-white/70 hover:bg-asphalt-light hover:text-white"
                 }`
               }
             >
@@ -41,13 +41,13 @@ export default function AdminDashboard() {
           ))}
         </nav>
 
-        <div className="px-4 py-4 border-t border-canvas/10 text-xs">
-          <p className="text-canvas/50 mb-1">Signed in as</p>
+        <div className="px-4 py-4 border-t border-white/10 text-xs">
+          <p className="text-white/50 mb-1">Signed in as</p>
           <p className="font-medium mb-3 truncate">{userProfile?.display_name || "Administrator"}</p>
           <button
             type="button"
             onClick={logout}
-            className="w-full py-2 rounded-sign border border-canvas/20 hover:bg-canvas/10 transition-colors"
+            className="w-full py-2 rounded-sign border border-white/20 hover:bg-background/10 transition-colors"
           >
             Log out
           </button>

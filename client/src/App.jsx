@@ -33,10 +33,10 @@ export default function App() {
 
 function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-canvas">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
         <p className="font-display text-4xl font-semibold mb-2">404</p>
-        <p className="text-ink/60">This page doesn't exist.</p>
+        <p className="text-muted">This page doesn't exist.</p>
       </div>
     </div>
   );

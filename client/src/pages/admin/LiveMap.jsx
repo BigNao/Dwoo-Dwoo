@@ -27,9 +27,9 @@ export default function LiveMap() {
 
   return (
     <div className="h-screen flex flex-col">
-      <header className="h-16 flex items-center px-8 border-b border-canvas/10">
+      <header className="h-16 flex items-center px-8 border-b border-white/10">
         <h1 className="font-display text-xl font-semibold">Live Map</h1>
-        <span className="ml-3 text-xs font-mono text-canvas/50">
+        <span className="ml-3 text-xs font-mono text-white/50">
           {reports.length} report{reports.length === 1 ? "" : "s"} · updating in real time
         </span>
       </header>
@@ -66,7 +66,7 @@ export default function LiveMap() {
                   <button
                     type="button"
                     onClick={() => setManagingReport(report)}
-                    className="mt-2 w-full py-1.5 rounded bg-ink text-canvas text-xs font-semibold"
+                    className="mt-2 w-full py-1.5 rounded bg-primary text-white text-xs font-semibold"
                   >
                     Manage Report
                   </button>

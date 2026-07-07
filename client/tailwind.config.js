@@ -4,37 +4,41 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: "#FAF7F2", // warm off-white — citizen portal background
-        ink: "#1B1B1F", // near-black text
-        gold: {
-          DEFAULT: "#D4A017", // adinkra gold — primary accent
-          dark: "#A67B12",
-          light: "#F0CD5C",
+        primary: {
+          DEFAULT: "#1E40AF",
+          hover: "#1D4ED8",
+          light: "#DBEAFE",
         },
-        kente: {
-          DEFAULT: "#B7332A", // hazard / danger red
-          dark: "#8C2620",
+        secondary: {
+          DEFAULT: "#059669",
+          dark: "#047857",
+          light: "#D1FAE5",
         },
-        forest: {
-          DEFAULT: "#1F5C4B", // resolved / verified green
-          dark: "#153F34",
-          light: "#2E8069",
+        accent: {
+          DEFAULT: "#F59E0B",
+          dark: "#D97706",
+          light: "#FEF3C7",
         },
+        danger: {
+          DEFAULT: "#DC2626",
+          dark: "#B91C1C",
+          light: "#FEE2E2",
+        },
+        background: "#F8FAFC",
+        card: "#FFFFFF",
+        border: "#E2E8F0",
+        ink: "#0F172A",
+        muted: "#475569",
         asphalt: {
-          DEFAULT: "#2B2D31", // admin dashboard base
-          light: "#3A3D42",
-          dark: "#1C1E21",
-        },
-        navy: {
-          DEFAULT: "#0F2A3D", // official banner / footer background
-          light: "#173C56",
-          dark: "#081B28",
+          DEFAULT: "#0F172A",
+          light: "#1E293B",
+          dark: "#020617",
         },
       },
       fontFamily: {
-        display: ["Fraunces", "ui-serif", "Georgia", "serif"],
-        body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["IBM Plex Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+        display: ["Poppins", "ui-sans-serif", "system-ui", "sans-serif"],
+        body: ["Poppins", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["Poppins", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       borderRadius: {
         sign: "6px",

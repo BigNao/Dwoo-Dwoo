@@ -41,17 +41,17 @@ export default function MyReports() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-14">
         <h1 className="font-display text-3xl font-semibold mb-8">My Reports</h1>
 
-        {loading && <p className="text-sm text-ink/50">Loading your reports…</p>}
+        {loading && <p className="text-sm text-muted/80">Loading your reports…</p>}
 
         {!loading && reports.length === 0 && (
-          <div className="rounded-sign border border-dashed border-ink/20 p-10 text-center">
-            <p className="text-ink/60">You haven't submitted any reports yet.</p>
+          <div className="rounded-sign border border-dashed border-border p-10 text-center">
+            <p className="text-muted">You haven't submitted any reports yet.</p>
           </div>
         )}
 
@@ -60,13 +60,13 @@ export default function MyReports() {
             <button
               key={report.report_id}
               onClick={() => setSelected(report)}
-              className="w-full text-left rounded-sign border border-ink/15 p-5 hover:border-ink/30 transition-colors"
+              className="w-full text-left rounded-sign border border-border p-5 hover:border-border transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-mono text-ink/50 mb-1">{report.reference_number}</p>
+                  <p className="text-xs font-mono text-muted/80 mb-1">{report.reference_number}</p>
                   <p className="font-display font-semibold">{report.incident_type}</p>
-                  <p className="text-xs text-ink/50 mt-1">{formatDate(report.timestamp)}</p>
+                  <p className="text-xs text-muted/80 mt-1">{formatDate(report.timestamp)}</p>
                 </div>
                 <StatusBadge status={report.status} />
               </div>
@@ -84,14 +84,14 @@ export default function MyReports() {
 
 function ReportDetailModal({ report, onClose }) {
   return (
-    <div className="fixed inset-0 bg-ink/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-primary/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div
-        className="bg-canvas rounded-sign max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto"
+        className="bg-background rounded-sign max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs font-mono text-ink/50 mb-1">{report.reference_number}</p>
+            <p className="text-xs font-mono text-muted/80 mb-1">{report.reference_number}</p>
             <h2 className="font-display text-xl font-semibold">{report.incident_type}</h2>
           </div>
           <StatusBadge status={report.status} />
@@ -107,20 +107,20 @@ function ReportDetailModal({ report, onClose }) {
 
         <p className="text-sm text-ink/80 leading-relaxed mb-4">{report.description}</p>
 
-        <dl className="grid grid-cols-2 gap-4 text-sm border-t border-ink/10 pt-4 mb-4">
+        <dl className="grid grid-cols-2 gap-4 text-sm border-t border-border pt-4 mb-4">
           <div>
-            <dt className="text-xs text-ink/50 uppercase tracking-wide mb-1">Submitted</dt>
+            <dt className="text-xs text-muted/80 uppercase tracking-wide mb-1">Submitted</dt>
             <dd className="font-mono">{formatDate(report.timestamp)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-ink/50 uppercase tracking-wide mb-1">Confidence</dt>
+            <dt className="text-xs text-muted/80 uppercase tracking-wide mb-1">Confidence</dt>
             <dd className="font-mono">{report.confidence_score}/100</dd>
           </div>
         </dl>
 
         {report.admin_notes && (
-          <div className="mb-4 pt-4 border-t border-ink/10">
-            <dt className="text-xs text-ink/50 uppercase tracking-wide mb-1">Note from officials</dt>
+          <div className="mb-4 pt-4 border-t border-border">
+            <dt className="text-xs text-muted/80 uppercase tracking-wide mb-1">Note from officials</dt>
             <dd className="text-sm">{report.admin_notes}</dd>
           </div>
         )}
@@ -128,7 +128,7 @@ function ReportDetailModal({ report, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="w-full py-2.5 rounded-sign border border-ink/20 font-medium hover:bg-ink/5 transition-colors"
+          className="w-full py-2.5 rounded-sign border border-border font-medium hover:bg-primary/5 transition-colors"
         >
           Close
         </button>

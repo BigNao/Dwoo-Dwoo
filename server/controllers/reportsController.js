@@ -22,18 +22,20 @@ const ADMIN_LOGS_COLLECTION = "admin_logs";
  * CORROBORATION_RADIUS_KM and CORROBORATION_WINDOW_MS of "now".
  * Returns the list of matching report document snapshots.
  */
-async function findCorroboratingReports({ incidentType, latitude, longitude }) {
+async function findCorroboratingReports({ incident_type, latitude, longitude }) {
   const windowStart = admin.firestore.Timestamp.fromMillis(Date.now() - CORROBORATION_WINDOW_MS);
 
+  // Single-field timestamp query (auto-indexed) — filter type + distance in memory
+  // so report submission works before composite indexes are deployed.
   const snapshot = await db
     .collection(REPORTS_COLLECTION)
-    .where("incident_type", "==", incidentType)
     .where("timestamp", ">=", windowStart)
     .get();
 
   const matches = [];
   snapshot.forEach((doc) => {
     const data = doc.data();
+    if (data.incident_type !== incident_type) return;
     if (typeof data.latitude !== "number" || typeof data.longitude !== "number") return;
 
     const km = distanceInKm(latitude, longitude, data.latitude, data.longitude);

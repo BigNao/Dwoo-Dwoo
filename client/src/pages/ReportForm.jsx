@@ -214,18 +214,18 @@ export default function ReportForm() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
         <h1 className="font-display text-3xl font-semibold mb-2">Report an Incident</h1>
-        <p className="text-sm text-ink/60 mb-8">
+        <p className="text-sm text-muted mb-8">
           Step {step + 1} of {STEPS.length} — {STEPS[step]}
         </p>
 
-        <div className="h-1.5 w-full bg-ink/10 rounded-full mb-10 overflow-hidden">
+        <div className="h-1.5 w-full bg-border rounded-full mb-10 overflow-hidden">
           <div
-            className="h-full bg-kente transition-all duration-300"
+            className="h-full bg-primary transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -277,7 +277,7 @@ export default function ReportForm() {
         )}
 
         {submitError && (
-          <p className="mt-6 text-sm text-kente font-medium" role="alert">
+          <p className="mt-6 text-sm text-danger font-medium" role="alert">
             {submitError}
           </p>
         )}
@@ -287,7 +287,7 @@ export default function ReportForm() {
             type="button"
             onClick={goBack}
             disabled={step === 0}
-            className="px-5 py-2.5 rounded-sign border border-ink/20 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-5 py-2.5 rounded-sign border border-border font-medium disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Back
           </button>
@@ -296,7 +296,7 @@ export default function ReportForm() {
             <button
               type="button"
               onClick={goNext}
-              className="px-6 py-2.5 rounded-sign bg-ink text-canvas font-medium hover:bg-ink/80 transition-colors"
+              className="px-6 py-2.5 rounded-sign bg-primary text-white font-medium hover:bg-primary-hover transition-colors"
             >
               Continue
             </button>
@@ -305,7 +305,7 @@ export default function ReportForm() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-6 py-2.5 rounded-sign bg-kente text-canvas font-semibold hover:bg-kente-dark transition-colors disabled:opacity-50"
+              className="px-6 py-2.5 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
             >
               {submitting ? "Submitting…" : "Submit Report"}
             </button>
@@ -332,7 +332,7 @@ export default function ReportForm() {
           body="Log in so this report appears in your My Reports list."
           onClick={onRegistered}
         />
-        {error && <p className="text-sm text-kente font-medium">{error}</p>}
+        {error && <p className="text-sm text-danger font-medium">{error}</p>}
       </div>
     );
   }
@@ -344,11 +344,11 @@ function OptionCard({ selected, title, body, onClick }) {
       type="button"
       onClick={onClick}
       className={`w-full text-left p-5 rounded-sign border-2 transition-colors ${
-        selected ? "border-kente bg-kente/5" : "border-ink/15 hover:border-ink/30"
+        selected ? "border-primary bg-primary/5" : "border-border hover:border-border"
       }`}
     >
       <p className="font-display font-semibold text-lg">{title}</p>
-      <p className="text-sm text-ink/60 mt-1">{body}</p>
+      <p className="text-sm text-muted mt-1">{body}</p>
     </button>
   );
 }
@@ -363,7 +363,7 @@ function StepIncidentType({ incidentType, setIncidentType, error }) {
         id="incident-type"
         value={incidentType}
         onChange={(e) => setIncidentType(e.target.value)}
-        className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente"
+        className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
       >
         <option value="">Select a category…</option>
         {INCIDENT_CATEGORIES.map((cat) => (
@@ -372,7 +372,7 @@ function StepIncidentType({ incidentType, setIncidentType, error }) {
           </option>
         ))}
       </select>
-      {error && <p className="mt-2 text-sm text-kente font-medium">{error}</p>}
+      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
     </div>
   );
 }
@@ -389,13 +389,13 @@ function StepDescription({ description, setDescription, error }) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Describe the incident: what you saw, when, and anything else responders should know…"
-        className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente resize-none"
+        className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary resize-none"
       />
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-ink/50">Minimum 20 characters.</p>
-        <p className="text-xs font-mono text-ink/50">{description.trim().length} chars</p>
+        <p className="text-xs text-muted/80">Minimum 20 characters.</p>
+        <p className="text-xs font-mono text-muted/80">{description.trim().length} chars</p>
       </div>
-      {error && <p className="mt-2 text-sm text-kente font-medium">{error}</p>}
+      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
     </div>
   );
 }
@@ -411,13 +411,13 @@ function StepLocation({ position, setPosition, detectGps, locatingGps, error }) 
           type="button"
           onClick={detectGps}
           disabled={locatingGps}
-          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-ink/20 hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-border hover:bg-primary hover:text-white transition-colors disabled:opacity-50"
         >
           {locatingGps ? "Locating…" : "Use My Location"}
         </button>
       </div>
 
-      <div className="h-72 w-full rounded-sign overflow-hidden border border-ink/15">
+      <div className="h-72 w-full rounded-sign overflow-hidden border border-border">
         <MapContainer center={center} zoom={position ? 15 : 7} style={{ height: "100%", width: "100%" }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -427,17 +427,17 @@ function StepLocation({ position, setPosition, detectGps, locatingGps, error }) 
         </MapContainer>
       </div>
 
-      <p className="mt-2 text-xs text-ink/50">
+      <p className="mt-2 text-xs text-muted/80">
         Tap the map or drag the pin to fine-tune the exact spot.
       </p>
 
       {position && (
-        <p className="mt-2 font-mono text-xs text-ink/70">
+        <p className="mt-2 font-mono text-xs text-muted">
           {position[0].toFixed(5)}, {position[1].toFixed(5)}
         </p>
       )}
 
-      {error && <p className="mt-2 text-sm text-kente font-medium">{error}</p>}
+      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
     </div>
   );
 }
@@ -446,13 +446,13 @@ function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
   return (
     <div>
       <label className="block text-sm font-medium mb-2">
-        Photo <span className="text-ink/40 font-normal">(optional)</span>
+        Photo <span className="text-muted/70 font-normal">(optional)</span>
       </label>
 
       {!photoPreview ? (
-        <label className="flex flex-col items-center justify-center gap-2 h-40 rounded-sign border-2 border-dashed border-ink/25 cursor-pointer hover:border-ink/40 transition-colors">
-          <span className="text-sm text-ink/60">Tap to choose a photo</span>
-          <span className="text-xs text-ink/40">JPG, PNG, or WEBP</span>
+        <label className="flex flex-col items-center justify-center gap-2 h-40 rounded-sign border-2 border-dashed border-border cursor-pointer hover:border-ink/40 transition-colors">
+          <span className="text-sm text-muted">Tap to choose a photo</span>
+          <span className="text-xs text-muted/70">JPG, PNG, or WEBP</span>
           <input
             ref={fileInputRef}
             type="file"
@@ -467,32 +467,32 @@ function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
           <button
             type="button"
             onClick={onRemove}
-            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-mono uppercase bg-ink/80 text-canvas rounded-sign"
+            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-mono uppercase bg-primary-hover text-white rounded-sign"
           >
             Remove
           </button>
         </div>
       )}
 
-      {error && <p className="mt-2 text-sm text-kente font-medium">{error}</p>}
+      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
     </div>
   );
 }
 
 function ConfirmationScreen({ confirmation, navigate }) {
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-1 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-forest text-canvas text-2xl mb-6">
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-white text-2xl mb-6">
             ✓
           </div>
           <h1 className="font-display text-3xl font-semibold mb-3">Report submitted</h1>
-          <p className="text-ink/70 mb-8">Save this reference number to track your report.</p>
+          <p className="text-muted mb-8">Save this reference number to track your report.</p>
 
-          <div className="rounded-sign border-2 border-dashed border-gold px-6 py-5 mb-8">
-            <p className="text-xs font-mono uppercase tracking-widest text-ink/50 mb-1">
+          <div className="rounded-sign border-2 border-dashed border-accent px-6 py-5 mb-8">
+            <p className="text-xs font-mono uppercase tracking-widest text-muted/80 mb-1">
               Reference Number
             </p>
             <p className="font-mono text-2xl font-semibold tracking-widest">
@@ -503,14 +503,14 @@ function ConfirmationScreen({ confirmation, navigate }) {
           <button
             type="button"
             onClick={() => navigate("/track")}
-            className="px-6 py-3 rounded-sign bg-ink text-canvas font-semibold hover:bg-ink/80 transition-colors mr-3"
+            className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors mr-3"
           >
             Track this report
           </button>
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-6 py-3 rounded-sign border border-ink/20 font-semibold hover:bg-ink/5 transition-colors"
+            className="px-6 py-3 rounded-sign border border-border font-semibold hover:bg-primary/5 transition-colors"
           >
             Back home
           </button>

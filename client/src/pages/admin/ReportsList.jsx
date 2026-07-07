@@ -146,18 +146,18 @@ export default function ReportsList() {
 
   return (
     <div className="h-screen flex flex-col">
-      <header className="flex items-center justify-between px-8 h-16 border-b border-canvas/10">
+      <header className="flex items-center justify-between px-8 h-16 border-b border-white/10">
         <h1 className="font-display text-xl font-semibold">Reports List</h1>
         <button
           type="button"
           onClick={exportCsv}
-          className="px-4 py-2 rounded-sign bg-gold text-ink text-sm font-semibold hover:bg-gold-dark transition-colors"
+          className="px-4 py-2 rounded-sign bg-accent text-ink text-sm font-semibold hover:bg-accent-dark transition-colors"
         >
           Export Filtered Reports
         </button>
       </header>
 
-      <div className="px-8 py-4 border-b border-canvas/10 flex flex-wrap gap-4 items-end">
+      <div className="px-8 py-4 border-b border-white/10 flex flex-wrap gap-4 items-end">
         <FilterSelect
           label="Incident type"
           value={filters.incident_type}
@@ -176,27 +176,27 @@ export default function ReportsList() {
         />
 
         <div>
-          <label className="block text-xs text-canvas/50 mb-1">From</label>
+          <label className="block text-xs text-white/50 mb-1">From</label>
           <input
             type="date"
             value={filters.dateFrom}
             onChange={(e) => updateFilter("dateFrom", e.target.value)}
-            className="rounded-sign bg-asphalt-light border border-canvas/20 px-3 py-2 text-sm"
+            className="rounded-sign bg-asphalt-light border border-white/20 px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-xs text-canvas/50 mb-1">To</label>
+          <label className="block text-xs text-white/50 mb-1">To</label>
           <input
             type="date"
             value={filters.dateTo}
             onChange={(e) => updateFilter("dateTo", e.target.value)}
-            className="rounded-sign bg-asphalt-light border border-canvas/20 px-3 py-2 text-sm"
+            className="rounded-sign bg-asphalt-light border border-white/20 px-3 py-2 text-sm"
           />
         </div>
 
         <div className="min-w-[220px]">
-          <label className="block text-xs text-canvas/50 mb-1">
+          <label className="block text-xs text-white/50 mb-1">
             Confidence: {filters.minScore}–{filters.maxScore}
           </label>
           <div className="flex items-center gap-2">
@@ -221,30 +221,30 @@ export default function ReportsList() {
       </div>
 
       <div className="flex-1 overflow-auto px-8 py-4">
-        {loading && <p className="text-sm text-canvas/50">Loading reports…</p>}
-        {error && <p className="text-sm text-kente">{error}</p>}
+        {loading && <p className="text-sm text-white/50">Loading reports…</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
         {!loading && !error && (
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="text-left border-b border-canvas/15">
+              <tr className="text-left border-b border-white/15">
                 {COLUMNS.map((col) => (
                   <th
                     key={col.key}
                     onClick={() => toggleSort(col.key)}
-                    className="py-3 pr-4 font-mono text-xs uppercase tracking-wide text-canvas/60 cursor-pointer select-none"
+                    className="py-3 pr-4 font-mono text-xs uppercase tracking-wide text-white/60 cursor-pointer select-none"
                   >
                     {col.label} {sortKey === col.key ? (sortDir === "asc" ? "▲" : "▼") : ""}
                   </th>
                 ))}
-                <th className="py-3 font-mono text-xs uppercase tracking-wide text-canvas/60">Actions</th>
+                <th className="py-3 font-mono text-xs uppercase tracking-wide text-white/60">Actions</th>
               </tr>
             </thead>
             <tbody>
               {pageReports.map((report) => (
                 <tr
                   key={report.report_id}
-                  className="border-b border-canvas/5 hover:bg-asphalt-light cursor-pointer"
+                  className="border-b border-white/5 hover:bg-asphalt-light cursor-pointer"
                   onClick={() => setManagingReport(report)}
                 >
                   <td className="py-3 pr-4 font-mono">{report.reference_number}</td>
@@ -264,7 +264,7 @@ export default function ReportsList() {
                         e.stopPropagation();
                         setManagingReport(report);
                       }}
-                      className="text-xs font-semibold text-gold hover:text-gold-light"
+                      className="text-xs font-semibold text-accent hover:text-accent-light"
                     >
                       Manage
                     </button>
@@ -274,7 +274,7 @@ export default function ReportsList() {
 
               {pageReports.length === 0 && (
                 <tr>
-                  <td colSpan={COLUMNS.length + 1} className="py-10 text-center text-canvas/40">
+                  <td colSpan={COLUMNS.length + 1} className="py-10 text-center text-white/40">
                     No reports match these filters.
                   </td>
                 </tr>
@@ -284,8 +284,8 @@ export default function ReportsList() {
         )}
       </div>
 
-      <div className="px-8 py-4 border-t border-canvas/10 flex items-center justify-between text-sm">
-        <p className="text-canvas/50">
+      <div className="px-8 py-4 border-t border-white/10 flex items-center justify-between text-sm">
+        <p className="text-white/50">
           Page {page} of {totalPages} · {sortedReports.length} total reports
         </p>
         <div className="flex gap-2">
@@ -293,7 +293,7 @@ export default function ReportsList() {
             type="button"
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-3 py-1.5 rounded-sign border border-canvas/20 disabled:opacity-30"
+            className="px-3 py-1.5 rounded-sign border border-white/20 disabled:opacity-30"
           >
             Previous
           </button>
@@ -301,7 +301,7 @@ export default function ReportsList() {
             type="button"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="px-3 py-1.5 rounded-sign border border-canvas/20 disabled:opacity-30"
+            className="px-3 py-1.5 rounded-sign border border-white/20 disabled:opacity-30"
           >
             Next
           </button>
@@ -325,11 +325,11 @@ export default function ReportsList() {
 function FilterSelect({ label, value, onChange, options }) {
   return (
     <div>
-      <label className="block text-xs text-canvas/50 mb-1">{label}</label>
+      <label className="block text-xs text-white/50 mb-1">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-sign bg-asphalt-light border border-canvas/20 px-3 py-2 text-sm min-w-[180px]"
+        className="rounded-sign bg-asphalt-light border border-white/20 px-3 py-2 text-sm min-w-[180px]"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
