@@ -22,6 +22,8 @@ export function AuthProvider({ children }) {
 
       if (user) {
         try {
+          // Ensure the auth token is attached before Firestore security rules run.
+          await user.getIdToken();
           const snap = await getDoc(doc(db, "users", user.uid));
           setUserProfile(snap.exists() ? snap.data() : null);
         } catch (err) {
@@ -59,6 +61,7 @@ export function AuthProvider({ children }) {
 
   async function login({ email, password }) {
     const credential = await signInWithEmailAndPassword(auth, email, password);
+    await credential.user.getIdToken();
     const snap = await getDoc(doc(db, "users", credential.user.uid));
     setUserProfile(snap.exists() ? snap.data() : null);
     return credential.user;
