@@ -26,20 +26,13 @@ const COLUMNS = [
       { label: "Data & Privacy", to: "#" },
     ],
   },
-  {
-    title: "Officials",
-    links: [
-      { label: "Admin Login", to: "/login" },
-      { label: "Dashboard Access", to: "/admin" },
-    ],
-  },
 ];
 
 export default function Footer() {
   return (
     <footer className="bg-primary text-white/80">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
           {COLUMNS.map((col) => (
             <div key={col.title}>
               <p className="text-xs font-mono uppercase tracking-widest text-accent mb-4">

@@ -72,7 +72,7 @@ function InfoPill({ children }) {
   return (
     <div className="flex items-center gap-3 rounded-full border border-offwhite-recessed/80 border-b-offwhite-recessed bg-offwhite-surface px-3 py-2 shadow-[0_3px_8px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.85)]">
       <SphereGraphic />
-      <p className="text-[14px] leading-relaxed tracking-normal text-ink">
+      <p className="text-[14px] leading-relaxed tracking-normal text-ink overflow-x-auto whitespace-nowrap sm:overflow-visible sm:whitespace-normal">
         {children}
       </p>
     </div>

@@ -32,8 +32,8 @@ export default function Notifications() {
           </div>
           {unreadCount > 0 && (
             <button
-              onClick={() => setNotifications(notifications.map((n) => ({ ...n, read: true })))}
-              className="text-sm text-primary hover:underline"
+              onClick={markAllAsRead}
+              className="text-sm text-primary hover:underline shrink-0"
             >
               Mark all as read
             </button>
@@ -62,7 +62,7 @@ export default function Notifications() {
                     <NotificationCard
                       key={notification.id}
                       notification={notification}
-                      onRead={handleMandleMarkAsRead}
+                      onRead={markAsRead}
                     />
                   ))}
                 </div>

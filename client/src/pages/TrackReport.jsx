@@ -57,18 +57,18 @@ export default function TrackReport() {
           Enter the reference number you received when you submitted your report.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex gap-2 mb-8">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 mb-8 sm:flex-row">
           <input
             type="text"
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
             placeholder="KD-XXXXXXXX"
-            className="flex-1 rounded-sign border border-border px-4 py-3 font-mono uppercase tracking-wide bg-card focus:border-primary"
+            className="w-full sm:flex-1 rounded-sign border border-border px-4 py-3 font-mono uppercase tracking-wide bg-card focus:border-primary"
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
           >
             {loading ? "Searching…" : "Track"}
           </button>

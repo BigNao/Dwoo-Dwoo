@@ -49,7 +49,7 @@ const ROWS = [CRIME_TIPS.slice(0, 3), CRIME_TIPS.slice(3, 6)];
 
 function CrimeTipCard({ tip }) {
   return (
-    <article className="group/card flex h-full min-h-[360px] flex-col overflow-hidden rounded-sign border border-border bg-card shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
+    <article className="group/card flex h-full min-h-[280px] sm:min-h-[360px] flex-col overflow-hidden rounded-sign border border-border bg-card shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
       <div className="flex min-h-0 flex-1 flex-col p-6 sm:p-8">
         <div className="mx-auto mb-6 flex min-h-0 flex-1 w-full max-w-[280px] items-center justify-center">
           <img

@@ -218,6 +218,16 @@ export default function ReportForm() {
       <Navbar />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors mb-4"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
         <h1 className="font-display text-3xl font-semibold mb-2">Report an Incident</h1>
         <p className="text-sm text-muted mb-8">
           Step {step + 1} of {STEPS.length} — {STEPS[step]}
@@ -282,12 +292,12 @@ export default function ReportForm() {
           </p>
         )}
 
-        <div className="mt-10 flex items-center justify-between">
+        <div className="mt-10 flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={goBack}
             disabled={step === 0}
-            className="px-5 py-2.5 rounded-sign border border-border font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-4 sm:px-5 py-2.5 rounded-sign border border-border font-medium disabled:opacity-30 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             Back
           </button>
@@ -296,7 +306,7 @@ export default function ReportForm() {
             <button
               type="button"
               onClick={goNext}
-              className="px-6 py-2.5 rounded-sign bg-primary text-white font-medium hover:bg-primary-hover transition-colors"
+              className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm sm:text-base whitespace-nowrap"
             >
               Continue
             </button>
@@ -305,7 +315,7 @@ export default function ReportForm() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-6 py-2.5 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
+              className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 text-sm sm:text-base whitespace-nowrap"
             >
               {submitting ? "Submitting…" : "Submit Report"}
             </button>
@@ -417,7 +427,7 @@ function StepLocation({ position, setPosition, detectGps, locatingGps, error }) 
         </button>
       </div>
 
-      <div className="h-72 w-full rounded-sign overflow-hidden border border-border">
+      <div className="h-56 sm:h-72 w-full rounded-sign overflow-hidden border border-border">
         <MapContainer center={center} zoom={position ? 15 : 7} style={{ height: "100%", width: "100%" }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -500,20 +510,22 @@ function ConfirmationScreen({ confirmation, navigate }) {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => navigate("/track")}
-            className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors mr-3"
-          >
-            Track this report
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="px-6 py-3 rounded-sign border border-border font-semibold hover:bg-primary/5 transition-colors"
-          >
-            Back home
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              type="button"
+              onClick={() => navigate("/track")}
+              className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
+            >
+              Track this report
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="px-6 py-3 rounded-sign border border-border font-semibold hover:bg-primary/5 transition-colors"
+            >
+              Back home
+            </button>
+          </div>
         </div>
       </main>
     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function StatisticCard({ label, value, icon: Icon, trend, className = '' }) {
   return (
-    <div className={`bg-card rounded-lg border border-border p-6 shadow-sm ${className}`}>
+    <div className={`bg-card rounded-lg border border-border p-4 lg:p-6 shadow-sm ${className}`}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm text-muted mb-1">{label}</p>

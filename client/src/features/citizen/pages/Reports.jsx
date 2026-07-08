@@ -65,7 +65,7 @@ export default function Reports() {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   filter === status
                     ? 'bg-primary text-white'
                     : 'bg-card border border-border hover:border-primary'

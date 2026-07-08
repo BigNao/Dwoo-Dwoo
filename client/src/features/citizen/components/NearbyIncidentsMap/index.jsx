@@ -42,7 +42,7 @@ export default function NearbyIncidentsMap({ incidents = [], center = [5.6037, -
         <h3 className="font-semibold">Nearby Incidents</h3>
         <p className="text-sm text-muted">{verifiedIncidents.length} verified reports nearby</p>
       </div>
-      <div className="h-64">
+      <div className="h-48 sm:h-64">
         <MapContainer center={userLocation} zoom={zoom} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

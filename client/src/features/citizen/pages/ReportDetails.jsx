@@ -87,7 +87,7 @@ export default function ReportDetails() {
             <img
               src={report.photo_url}
               alt="Reported incident"
-              className="w-full h-64 object-cover rounded-lg mb-4"
+              className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4"
             />
           )}
 
@@ -97,7 +97,7 @@ export default function ReportDetails() {
               <p className="text-muted leading-relaxed">{report.description}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-border">
               <div>
                 <p className="text-xs text-muted uppercase tracking-wide mb-1">Submitted</p>
                 <p className="font-medium">{formatDate(report.timestamp)}</p>
