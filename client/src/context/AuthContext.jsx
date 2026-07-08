@@ -22,6 +22,8 @@ export function AuthProvider({ children }) {
 
       if (user) {
         try {
+          // Ensure the auth token is attached before Firestore security rules run.
+          await user.getIdToken();
           const snap = await getDoc(doc(db, "users", user.uid));
           setUserProfile(snap.exists() ? snap.data() : null);
         } catch (err) {
@@ -52,16 +54,18 @@ export function AuthProvider({ children }) {
     };
 
     await setDoc(doc(db, "users", credential.user.uid), profile);
-    setUserProfile(profile);
+    await signOut(auth);
 
-    return credential.user;
+    return profile;
   }
 
   async function login({ email, password }) {
     const credential = await signInWithEmailAndPassword(auth, email, password);
+    await credential.user.getIdToken();
     const snap = await getDoc(doc(db, "users", credential.user.uid));
-    setUserProfile(snap.exists() ? snap.data() : null);
-    return credential.user;
+    const profile = snap.exists() ? snap.data() : null;
+    setUserProfile(profile);
+    return { user: credential.user, profile };
   }
 
   async function logout() {
@@ -70,11 +74,13 @@ export function AuthProvider({ children }) {
   }
 
   const isAdmin = userProfile?.role === "admin";
+  const isCitizen = userProfile?.role === "citizen";
 
   const value = {
     currentUser,
     userProfile,
     isAdmin,
+    isCitizen,
     loading,
     register,
     login,

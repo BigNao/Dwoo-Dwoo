@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+@layer components {
+  button, a {
+    @apply transition-transform duration-200;
+  }
+  
+  button:hover, a:hover {
+    @apply scale-105;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -11,7 +46,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #d4a017;
+  outline: 2px solid #0f0f2e;
   outline-offset: 2px;
 }
 
@@ -25,7 +60,7 @@ body {
   align-items: center;
   gap: 0.4rem;
   padding: 0.3rem 0.75rem;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -36,7 +71,7 @@ body {
 }
 
 .leaflet-container {
-  font-family: "Inter", ui-sans-serif, sans-serif;
+  font-family: "Poppins", ui-sans-serif, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {

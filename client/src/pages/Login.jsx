@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
+import SuccessModal from "../components/SuccessModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
@@ -13,6 +14,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -25,9 +27,14 @@ export default function Login() {
 
     setSubmitting(true);
     try {
-      await login({ email: email.trim(), password });
-      const redirectTo = location.state?.from || "/my-reports";
-      navigate(redirectTo);
+      const { profile } = await login({ email: email.trim(), password });
+      
+      if (profile?.role === "admin") {
+        setFormError("Administrators must log in at /admin/login");
+        return;
+      }
+      
+      setShowSuccessModal(true);
     } catch (err) {
       setFormError(mapFirebaseError(err.code));
     } finally {
@@ -35,12 +42,18 @@ export default function Login() {
     }
   }
 
+  function handleModalClose() {
+    setShowSuccessModal(false);
+    const redirectTo = location.state?.from || "/citizen";
+    navigate(redirectTo);
+  }
+
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-md mx-auto px-4 sm:px-6 py-14">
         <h1 className="font-display text-3xl font-semibold mb-2">Log in</h1>
-        <p className="text-sm text-ink/60 mb-8">
+        <p className="text-sm text-muted mb-8">
           Welcome back. Log in to view your reports or access the admin dashboard.
         </p>
 
@@ -51,7 +64,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente"
+              className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
             />
           </div>
 
@@ -61,24 +74,32 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente"
+              className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
             />
           </div>
 
-          {formError && <p className="text-sm text-kente font-medium">{formError}</p>}
+          {formError && <p className="text-sm text-danger font-medium">{formError}</p>}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 rounded-sign bg-ink text-canvas font-semibold hover:bg-ink/80 transition-colors disabled:opacity-50"
+            className="w-full py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
           >
             {submitting ? "Logging in…" : "Log in"}
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-ink/60">
+        <SuccessModal
+          open={showSuccessModal}
+          title="Welcome back"
+          message="You have logged in successfully."
+          buttonLabel="Continue to dashboard"
+          onButtonClick={handleModalClose}
+        />
+
+        <p className="mt-6 text-sm text-muted">
           Don't have an account?{" "}
-          <Link to="/register" className="text-kente font-medium">
+          <Link to="/register" className="text-primary font-medium">
             Register
           </Link>
         </p>

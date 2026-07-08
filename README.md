@@ -122,11 +122,27 @@ The app starts on `http://localhost:5173`.
 
 ---
 
-## 4. Seed a test admin user
+## 4. Authentication & User Roles
 
-Registered users default to `role: "citizen"`. To reach `/admin`, a user's
-Firestore `users/{uid}` document needs `role: "admin"`. A helper script is
-included:
+### Citizen Portal (Public)
+
+Citizens can register and log in through the public portal:
+
+- **Registration:** `/register` - Creates Firebase Auth account with `role: "citizen"`
+- **Login:** `/login` - Citizens log in here and are redirected to `/citizen`
+- **Protected Routes:** `/citizen/*` - Requires authentication and `role: "citizen"`
+
+### Admin Portal (Protected)
+
+Administrators have a completely separate authentication flow:
+
+- **Login:** `/admin/login` - Dedicated admin login page with separate branding
+- **Protected Routes:** `/admin/*` - Requires authentication and `role: "admin"`
+- **No Public Registration:** Admin accounts cannot be created through the UI
+
+### Seeding an Admin Account
+
+Admin accounts must be created using the seed script (or Firebase Console):
 
 ```bash
 cd server
@@ -134,10 +150,10 @@ node scripts/seedAdmin.js admin@example.com StrongPassw0rd "Admin User"
 ```
 
 This will:
-1. Create the Firebase Auth account if it doesn't already exist (or reuse it if it does).
+1. Create the Firebase Auth account if it doesn't exist (or reuse it if it does).
 2. Create/update the matching `users/{uid}` Firestore document with `role: "admin"`.
 
-Log in at `/login` with those credentials, then visit `/admin`.
+Log in at `/admin/login` with those credentials to access the admin dashboard.
 
 ---
 
@@ -176,9 +192,15 @@ Management Panel** in the dashboard; every change is recorded in
 - The citizen-facing flow (landing, report, track, register, login) needs
   no admin privileges and works whether or not Firebase Storage/Auth are
   reachable for the *photo* step specifically — photo upload is optional.
-- `/admin/*` is protected by `PrivateRoute`, which checks both an active
+- `/admin/*` is protected by `AdminRoute`, which checks both an active
   Firebase Auth session **and** `role === "admin"` on the user's Firestore
-  document before rendering the dashboard; otherwise it redirects to `/login`.
+  document before rendering the dashboard; otherwise it redirects to `/admin/login`.
+- `/citizen/*` is protected by `CitizenRoute`, which requires authentication
+  and `role === "citizen"`. Admins attempting to access citizen routes are redirected to `/admin`.
 - The backend's `verifyAdmin` middleware performs the same check
   server-side (401 if unauthenticated, 403 if authenticated but not an
   admin) — the frontend guard alone is not treated as sufficient security.
+- **Security:** Role assignment is enforced at multiple layers:
+  - Client-side registration hardcodes `role: "citizen"`
+  - Firestore security rules prevent role changes via client SDK
+  - Only Admin SDK (backend scripts) can assign admin roles

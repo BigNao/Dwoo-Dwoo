@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
+import SuccessModal from "../components/SuccessModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Register() {
@@ -14,6 +15,7 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   function validate() {
     const errs = {};
@@ -33,7 +35,7 @@ export default function Register() {
     setSubmitting(true);
     try {
       await register({ name: name.trim(), email: email.trim(), password });
-      navigate("/my-reports");
+      setShowSuccessModal(true);
     } catch (err) {
       setFormError(mapFirebaseError(err.code));
     } finally {
@@ -41,12 +43,17 @@ export default function Register() {
     }
   }
 
+  function handleModalClose() {
+    setShowSuccessModal(false);
+    navigate("/login");
+  }
+
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-md mx-auto px-4 sm:px-6 py-14">
         <h1 className="font-display text-3xl font-semibold mb-2">Create an account</h1>
-        <p className="text-sm text-ink/60 mb-8">
+        <p className="text-sm text-muted mb-8">
           Registering lets you track every report you submit in one place.
         </p>
 
@@ -56,7 +63,7 @@ export default function Register() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente"
+              className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
             />
           </Field>
 
@@ -65,7 +72,7 @@ export default function Register() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente"
+              className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
             />
           </Field>
 
@@ -74,24 +81,31 @@ export default function Register() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-sign border border-ink/20 px-4 py-3 bg-white focus:border-kente"
+              className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
             />
           </Field>
 
-          {formError && <p className="text-sm text-kente font-medium">{formError}</p>}
+          {formError && <p className="text-sm text-danger font-medium">{formError}</p>}
+          <SuccessModal
+            open={showSuccessModal}
+            title="Account created"
+            message="Your citizen account has been created successfully."
+            buttonLabel="Go to login"
+            onButtonClick={handleModalClose}
+          />
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 rounded-sign bg-ink text-canvas font-semibold hover:bg-ink/80 transition-colors disabled:opacity-50"
+            className="w-full py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
           >
             {submitting ? "Creating account…" : "Create account"}
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-ink/60">
+        <p className="mt-6 text-sm text-muted">
           Already have an account?{" "}
-          <Link to="/login" className="text-kente font-medium">
+          <Link to="/login" className="text-primary font-medium">
             Log in
           </Link>
         </p>
@@ -106,7 +120,7 @@ function Field({ label, error, children }) {
     <div>
       <label className="block text-sm font-medium mb-2">{label}</label>
       {children}
-      {error && <p className="mt-1.5 text-sm text-kente font-medium">{error}</p>}
+      {error && <p className="mt-1.5 text-sm text-danger font-medium">{error}</p>}
     </div>
   );
 }
