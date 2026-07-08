@@ -70,7 +70,7 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold mb-1">
-            {getGreeting()}, {userProfile?.display_name?.split(' ')[0] || 'Citizen'}
+            {getGreeting()}, {userProfile?.display_name?.split(' ')?.[0] || 'Citizen'}
           </h2>
           <p className="text-muted">Stay informed about road safety reports around you</p>
         </div>

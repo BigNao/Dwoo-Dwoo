@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
+import SuccessModal from "../components/SuccessModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
@@ -13,6 +14,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -27,20 +29,23 @@ export default function Login() {
     try {
       const { profile } = await login({ email: email.trim(), password });
       
-      // Redirect based on role
       if (profile?.role === "admin") {
-        // Admins should use the admin login portal
         setFormError("Administrators must log in at /admin/login");
         return;
       }
       
-      const redirectTo = location.state?.from || "/citizen";
-      navigate(redirectTo);
+      setShowSuccessModal(true);
     } catch (err) {
       setFormError(mapFirebaseError(err.code));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function handleModalClose() {
+    setShowSuccessModal(false);
+    const redirectTo = location.state?.from || "/citizen";
+    navigate(redirectTo);
   }
 
   return (
@@ -83,6 +88,14 @@ export default function Login() {
             {submitting ? "Logging in…" : "Log in"}
           </button>
         </form>
+
+        <SuccessModal
+          open={showSuccessModal}
+          title="Welcome back"
+          message="You have logged in successfully."
+          buttonLabel="Continue to dashboard"
+          onButtonClick={handleModalClose}
+        />
 
         <p className="mt-6 text-sm text-muted">
           Don't have an account?{" "}

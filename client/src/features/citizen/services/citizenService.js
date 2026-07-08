@@ -1,16 +1,23 @@
-import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, where, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, onSnapshot, query, where, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
 export const citizenService = {
   getCitizenReports: (userId, onData, onError) => {
     const q = query(
       collection(db, 'reports'),
-      where('user_id', '==', userId),
-      orderBy('timestamp', 'desc')
+      where('user_id', '==', userId)
     );
     return onSnapshot(
       q,
-      (snapshot) => onData(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))),
+      (snapshot) => {
+        const reports = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        reports.sort((a, b) => {
+          const tA = a.timestamp?.toDate?.() ?? new Date(a.timestamp?.seconds * 1000);
+          const tB = b.timestamp?.toDate?.() ?? new Date(b.timestamp?.seconds * 1000);
+          return tB - tA;
+        });
+        onData(reports);
+      },
       onError
     );
   },
@@ -41,12 +48,19 @@ export const citizenService = {
   getNotifications: (userId, onData, onError) => {
     const q = query(
       collection(db, 'notifications'),
-      where('user_id', '==', userId),
-      orderBy('timestamp', 'desc')
+      where('user_id', '==', userId)
     );
     return onSnapshot(
       q,
-      (snapshot) => onData(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))),
+      (snapshot) => {
+        const notifications = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        notifications.sort((a, b) => {
+          const tA = a.timestamp?.toDate?.() ?? new Date(a.timestamp?.seconds * 1000);
+          const tB = b.timestamp?.toDate?.() ?? new Date(b.timestamp?.seconds * 1000);
+          return tB - tA;
+        });
+        onData(notifications);
+      },
       onError
     );
   },

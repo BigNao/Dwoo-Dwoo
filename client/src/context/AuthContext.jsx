@@ -44,20 +44,19 @@ export function AuthProvider({ children }) {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(credential.user, { displayName: name });
 
-    // CRITICAL: Role is hardcoded to "citizen" - no way to create admin via registration
     const profile = {
       user_id: credential.user.uid,
       display_name: name,
       email_address: email,
       registration_timestamp: serverTimestamp(),
       report_count: 0,
-      role: "citizen", // Always citizen - enforced on client
+      role: "citizen",
     };
 
     await setDoc(doc(db, "users", credential.user.uid), profile);
-    setUserProfile(profile);
+    await signOut(auth);
 
-    return credential.user;
+    return profile;
   }
 
   async function login({ email, password }) {

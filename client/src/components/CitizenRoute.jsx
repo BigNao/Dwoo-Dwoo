@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useLocation, Outlet } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 /**
@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext.jsx";
  * Redirects to /login if not authenticated.
  * Redirects admins to /admin if they accidentally access citizen routes.
  */
-export default function CitizenRoute() {
+export default function CitizenRoute({ children }) {
   const { currentUser, isAdmin, isCitizen, loading } = useAuth();
   const location = useLocation();
 
@@ -33,5 +33,5 @@ export default function CitizenRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return children;
 }

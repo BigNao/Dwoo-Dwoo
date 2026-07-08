@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
+import SuccessModal from "../components/SuccessModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Register() {
@@ -14,6 +15,7 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   function validate() {
     const errs = {};
@@ -33,12 +35,17 @@ export default function Register() {
     setSubmitting(true);
     try {
       await register({ name: name.trim(), email: email.trim(), password });
-      navigate("/my-reports");
+      setShowSuccessModal(true);
     } catch (err) {
       setFormError(mapFirebaseError(err.code));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function handleModalClose() {
+    setShowSuccessModal(false);
+    navigate("/login");
   }
 
   return (
@@ -79,6 +86,13 @@ export default function Register() {
           </Field>
 
           {formError && <p className="text-sm text-danger font-medium">{formError}</p>}
+          <SuccessModal
+            open={showSuccessModal}
+            title="Account created"
+            message="Your citizen account has been created successfully."
+            buttonLabel="Go to login"
+            onButtonClick={handleModalClose}
+          />
 
           <button
             type="submit"

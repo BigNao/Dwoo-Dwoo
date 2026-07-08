@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { Navigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
@@ -24,12 +24,17 @@ export default function MyReports() {
 
     const q = query(
       collection(db, "reports"),
-      where("user_id", "==", currentUser.uid),
-      orderBy("timestamp", "desc")
+      where("user_id", "==", currentUser.uid)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setReports(snapshot.docs.map((doc) => doc.data()));
+      const reports = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      reports.sort((a, b) => {
+        const tA = a.timestamp?.toDate?.() ?? new Date(a.timestamp?.seconds * 1000);
+        const tB = b.timestamp?.toDate?.() ?? new Date(b.timestamp?.seconds * 1000);
+        return tB - tA;
+      });
+      setReports(reports);
       setLoading(false);
     });
 

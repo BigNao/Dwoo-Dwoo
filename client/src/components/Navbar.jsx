@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import SuccessModal from "./SuccessModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const { currentUser, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  async function handleLogout() {
+  async function handleLogoutClick() {
+    setShowLogoutModal(true);
+  }
+
+  async function handleLogoutConfirm() {
+    setShowLogoutModal(false);
     await logout();
     navigate("/");
   }
@@ -48,7 +55,7 @@ export default function Navbar() {
                   My Reports
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={handleLogoutClick}
                   className="px-3 py-1.5 rounded-sign border border-white/30 hover:bg-white/20 transition-colors"
                 >
                   Log out
@@ -70,6 +77,13 @@ export default function Navbar() {
           </nav>
         </div>
       </header>
+      <SuccessModal
+        open={showLogoutModal}
+        title="Logged out"
+        message="You have been logged out successfully."
+        buttonLabel="Return to home"
+        onButtonClick={handleLogoutConfirm}
+      />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import StatusBadge from '../../../components/StatusBadge';
+import StatusBadge from '../../../../components/StatusBadge';
 
 export default function ReportCard({ report, onClick, className = '' }) {
   const formatDate = (ts) => {
