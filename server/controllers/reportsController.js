@@ -1,5 +1,6 @@
 const { db, admin } = require("../config/firebaseAdmin");
 const { calculateConfidenceScore, deriveInitialStatus } = require("../utils/confidence");
+const { uploadImage } = require("../utils/cloudinary");
 const {
   generateReferenceNumber,
   generateReportId,
@@ -55,7 +56,8 @@ async function createReport(req, res) {
       description,
       latitude,
       longitude,
-      photo_url,
+      photo_data,
+      photo_name,
       user_id,
     } = req.body;
 
@@ -84,8 +86,27 @@ async function createReport(req, res) {
       errors.user_id = "user_id is required when submission_type is 'registered'.";
     }
 
+    if (photo_data && !photo_name) {
+      errors.photo_name = "photo_name is required when photo_data is provided.";
+    }
+
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({ error: "ValidationError", fields: errors });
+    }
+
+    // --- Image upload to Cloudinary ---
+    let photoUrl = null;
+    if (photo_data) {
+      try {
+        const buffer = Buffer.from(photo_data, 'base64');
+        photoUrl = await uploadImage(buffer, photo_name);
+      } catch (uploadError) {
+        console.error('Image upload failed:', uploadError);
+        return res.status(500).json({
+          error: "UploadError",
+          message: "Failed to upload image. Please try again."
+        });
+      }
     }
 
     // --- Corroboration check ---
@@ -102,7 +123,7 @@ async function createReport(req, res) {
       description,
       latitude: lat,
       longitude: lng,
-      photoUrl: photo_url || null,
+      photoUrl: photoUrl || null,
       corroborationFlag,
     });
     const status = deriveInitialStatus(confidenceScore);
@@ -121,7 +142,7 @@ async function createReport(req, res) {
       latitude: lat,
       longitude: lng,
       timestamp: now,
-      photo_url: photo_url || null,
+      photo_url: photoUrl || null,
       status,
       confidence_score: confidenceScore,
       corroboration_flag: corroborationFlag,

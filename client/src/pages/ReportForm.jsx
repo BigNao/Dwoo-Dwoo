@@ -2,10 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import Navbar from "../components/Navbar.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { storage } from "../firebase.js";
 import api from "../utils/api.js";
 import { INCIDENT_CATEGORIES } from "../utils/constants.js";
 
@@ -178,13 +176,12 @@ export default function ReportForm() {
     setSubmitting(true);
 
     try {
-      let photoUrl = null;
+      let photoData = null;
+      let photoName = null;
 
       if (photoFile) {
-        const path = `reports/${Date.now()}_${photoFile.name}`;
-        const fileRef = storageRef(storage, path);
-        await uploadBytes(fileRef, photoFile);
-        photoUrl = await getDownloadURL(fileRef);
+        photoData = await fileToBase64(photoFile);
+        photoName = photoFile.name;
       }
 
       const payload = {
@@ -193,7 +190,8 @@ export default function ReportForm() {
         description: description.trim(),
         latitude: position[0],
         longitude: position[1],
-        photo_url: photoUrl,
+        photo_data: photoData,
+        photo_name: photoName,
         user_id: submissionType === "registered" ? currentUser?.uid : null,
       };
 
@@ -207,6 +205,18 @@ export default function ReportForm() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
   }
 
   if (confirmation) {
