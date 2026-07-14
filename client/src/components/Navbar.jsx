@@ -1,21 +1,54 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import SuccessModal from "./SuccessModal.jsx";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ConfirmModal from "./ConfirmModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const { currentUser, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const location = useLocation();
+  const [showBackLogoutModal, setShowBackLogoutModal] = useState(false);
+  const backModalOpenRef = useRef(false);
+  const ignorePopRef = useRef(false);
 
-  async function handleLogoutClick() {
-    setShowLogoutModal(true);
-  }
+  useEffect(() => {
+    backModalOpenRef.current = showBackLogoutModal;
+  }, [showBackLogoutModal]);
 
-  async function handleLogoutConfirm() {
-    setShowLogoutModal(false);
+  useEffect(() => {
+    if (!currentUser) return;
+    if (!location.pathname.startsWith("/citizen") && !location.pathname.startsWith("/admin")) return;
+
+    window.history.pushState(null, document.title, window.location.href);
+
+    const handlePopState = () => {
+      if (ignorePopRef.current) {
+        ignorePopRef.current = false;
+        return;
+      }
+
+      if (backModalOpenRef.current) return;
+
+      setShowBackLogoutModal(true);
+      ignorePopRef.current = true;
+      window.history.go(1);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [currentUser, location.pathname]);
+
+  async function handleBackLogoutConfirm() {
+    setShowBackLogoutModal(false);
     await logout();
     navigate("/");
+  }
+
+  function handleBackLogoutCancel() {
+    setShowBackLogoutModal(false);
   }
 
   return (
@@ -43,46 +76,33 @@ export default function Navbar() {
               Track
             </Link>
 
-            {isAdmin && (
-              <Link to="/admin" className="hover:text-accent transition-colors text-xs sm:text-sm">
-                Admin
+            {currentUser && !isAdmin ? (
+              <Link to="/my-reports" className="hover:text-accent transition-colors text-xs sm:text-sm whitespace-nowrap">
+                My Reports
               </Link>
-            )}
+            ) : null}
 
-            {currentUser ? (
-              <>
-                <Link to="/my-reports" className="hover:text-accent transition-colors text-xs sm:text-sm whitespace-nowrap">
-                  My Reports
-                </Link>
-                <button
-                  onClick={handleLogoutClick}
-                  className="px-2 sm:px-3 py-1.5 rounded-sign border border-white/30 hover:bg-white/20 transition-colors text-xs sm:text-sm"
-                >
-                  Log out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="hover:text-accent transition-colors text-xs sm:text-sm">
-                  Log in
-                </Link>
-                <Link
-                  to="/report"
-                  className="px-2 sm:px-3 py-1.5 rounded-sign bg-accent text-ink hover:bg-white/90 transition-colors text-xs sm:text-sm whitespace-nowrap"
-                >
-                  Report
-                </Link>
-              </>
-            )}
+            <Link to="/login" className="hover:text-accent transition-colors text-xs sm:text-sm">
+              Log in
+            </Link>
+            <Link
+              to="/report"
+              className="px-2 sm:px-3 py-1.5 rounded-sign bg-accent text-ink hover:bg-white/90 transition-colors text-xs sm:text-sm whitespace-nowrap"
+            >
+              Report
+            </Link>
           </nav>
         </div>
       </header>
-      <SuccessModal
-        open={showLogoutModal}
-        title="Logged out"
-        message="You have been logged out successfully."
-        buttonLabel="Return to home"
-        onButtonClick={handleLogoutConfirm}
+
+      <ConfirmModal
+        open={showBackLogoutModal}
+        title="Leave the dashboard?"
+        message="Pressing the browser back button will log you out and return you to the public website."
+        confirmLabel="Log out and leave"
+        cancelLabel="Stay logged in"
+        onConfirm={handleBackLogoutConfirm}
+        onCancel={handleBackLogoutCancel}
       />
     </>
   );

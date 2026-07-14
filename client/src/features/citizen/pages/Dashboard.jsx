@@ -85,12 +85,13 @@ export default function Dashboard() {
         <div>
           <h3 className="font-semibold mb-4">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {quickActions.map((action) => (
+            {quickActions.map((action, index) => (
               <Link key={action.label} to={action.to}>
                 <QuickActionCard
                   icon={action.icon}
                   label={action.label}
                   description={action.description}
+                  accent={index === 0}
                 />
               </Link>
             ))}
@@ -100,18 +101,30 @@ export default function Dashboard() {
         <div>
           <h3 className="font-semibold mb-4">Emergency Contacts</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-card rounded-lg border border-border p-4">
+            <button
+              type="button"
+              onClick={() => window.location.href = 'tel:191'}
+              className="bg-card rounded-lg border border-border p-4 text-left hover:border-danger hover:shadow-md transition-all"
+            >
               <p className="font-medium text-danger">Police</p>
               <p className="text-2xl font-bold">191</p>
-            </div>
-            <div className="bg-card rounded-lg border border-border p-4">
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.href = 'tel:193'}
+              className="bg-card rounded-lg border border-border p-4 text-left hover:border-danger hover:shadow-md transition-all"
+            >
               <p className="font-medium text-danger">Ambulance</p>
               <p className="text-2xl font-bold">193</p>
-            </div>
-            <div className="bg-card rounded-lg border border-border p-4">
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.href = 'tel:192'}
+              className="bg-card rounded-lg border border-border p-4 text-left hover:border-danger hover:shadow-md transition-all"
+            >
               <p className="font-medium text-danger">Fire</p>
               <p className="text-2xl font-bold">192</p>
-            </div>
+            </button>
           </div>
         </div>
 

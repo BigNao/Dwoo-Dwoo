@@ -27,7 +27,7 @@ const CRIME_TIPS = [
     title: "Roads & Highways",
     agency: "Ministry of Roads and Highways",
     logo: "/assets/MoR.png",
-    href: "https://mrt.gov.gh",
+    href: "https://mrh.gov.gh",
   },
   {
     id: "nrsa",
@@ -38,10 +38,10 @@ const CRIME_TIPS = [
   },
   {
     id: "nrsa-full",
-    title: "Safety & Protection",
-    agency: "National Road Safety Authority",
-    logo: "/assets/NRSA-1.PNG",
-    href: "https://nrsa.gov.gh",
+    title: "Driver and Vehicle Licencing",
+    agency: "Driver and Vehicle Licencing Authority",
+    logo: "/assets/dvla-ghana.png",
+    href: "https://www.dvla.gov.gh",
   },
 ];
 

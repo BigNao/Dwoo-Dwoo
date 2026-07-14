@@ -181,7 +181,8 @@ export default function ReportForm() {
       let photoUrl = null;
 
       if (photoFile) {
-        const path = `reports/${Date.now()}_${photoFile.name}`;
+        const sanitizedFileName = photoFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `reports/${Date.now()}_${sanitizedFileName}`;
         const fileRef = storageRef(storage, path);
         await uploadBytes(fileRef, photoFile);
         photoUrl = await getDownloadURL(fileRef);

@@ -64,6 +64,21 @@ export function AuthProvider({ children }) {
     await credential.user.getIdToken();
     const snap = await getDoc(doc(db, "users", credential.user.uid));
     const profile = snap.exists() ? snap.data() : null;
+
+    if (profile?.role === "admin") {
+      setCurrentUser(credential.user);
+      setUserProfile(profile);
+      return { user: credential.user, profile };
+    }
+
+    if (profile?.role !== "citizen") {
+      await signOut(auth);
+      setCurrentUser(null);
+      setUserProfile(null);
+      return { user: null, profile };
+    }
+
+    setCurrentUser(credential.user);
     setUserProfile(profile);
     return { user: credential.user, profile };
   }
@@ -71,6 +86,7 @@ export function AuthProvider({ children }) {
   async function logout() {
     await signOut(auth);
     setUserProfile(null);
+    setCurrentUser(null);
   }
 
   const isAdmin = userProfile?.role === "admin";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function AdminLogin() {
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -22,7 +22,13 @@ export default function AdminLogin() {
 
     setSubmitting(true);
     try {
-      await login({ email: email.trim(), password });
+      const { user, profile } = await login({ email: email.trim(), password });
+
+      if (!user || profile?.role !== "admin") {
+        setFormError("Invalid credentials. Access denied.");
+        return;
+      }
+
       navigate("/admin");
     } catch (err) {
       setFormError(mapFirebaseError(err.code));
@@ -86,12 +92,20 @@ export default function AdminLogin() {
         </div>
 
         <div className="mt-6 text-center">
-          <a
-            href="/"
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await logout();
+              } catch (err) {
+                // ignore
+              }
+              window.location.href = "/";
+            }}
             className="text-slate-400 hover:text-white text-sm transition-colors"
           >
             ← Return to public website
-          </a>
+          </button>
         </div>
       </div>
     </div>
