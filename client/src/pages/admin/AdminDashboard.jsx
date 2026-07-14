@@ -1,6 +1,7 @@
-import React from "react";
-import { NavLink, Route, Routes } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import ConfirmModal from "../../components/ConfirmModal.jsx";
 import LiveMap from "./LiveMap.jsx";
 import ReportsList from "./ReportsList.jsx";
 import Analytics from "./Analytics.jsx";
@@ -12,10 +13,59 @@ const NAV_ITEMS = [
 ];
 
 export default function AdminDashboard() {
-  const { userProfile, logout } = useAuth();
+  const { currentUser, userProfile, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showBackLogoutModal, setShowBackLogoutModal] = useState(false);
+  const backModalOpenRef = useRef(false);
+  const ignorePopRef = useRef(false);
+
+  useEffect(() => {
+    backModalOpenRef.current = showBackLogoutModal;
+  }, [showBackLogoutModal]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    window.history.pushState(null, document.title, window.location.href);
+
+    const handlePopState = () => {
+      if (ignorePopRef.current) {
+        ignorePopRef.current = false;
+        return;
+      }
+
+      if (backModalOpenRef.current) return;
+
+      setShowBackLogoutModal(true);
+      ignorePopRef.current = true;
+      window.history.go(1);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [currentUser]);
+
+  async function handleBackLogoutConfirm() {
+    setShowBackLogoutModal(false);
+    await logout();
+    navigate("/admin/login");
+  }
+
+  function handleBackLogoutCancel() {
+    setShowBackLogoutModal(false);
+  }
+
+  async function handleLogoutClick() {
+    setShowBackLogoutModal(true);
+  }
 
   return (
-    <div className="min-h-screen bg-asphalt text-white flex flex-col lg:flex-row">
+    <>
+      <div className="min-h-screen bg-asphalt text-white flex flex-col lg:flex-row">
       {/* Mobile top bar */}
       <div className="lg:hidden flex items-center justify-between px-4 h-14 border-b border-white/10 bg-asphalt-dark">
         <div className="flex items-center gap-2">
@@ -28,7 +78,7 @@ export default function AdminDashboard() {
           <span className="text-xs text-white/50 truncate max-w-[100px]">{userProfile?.display_name || "Admin"}</span>
           <button
             type="button"
-            onClick={logout}
+            onClick={handleLogoutClick}
             className="px-2 py-1 text-xs rounded-sign border border-white/20 hover:bg-white/10 transition-colors"
           >
             Log out
@@ -85,7 +135,7 @@ export default function AdminDashboard() {
           <p className="font-medium mb-3 truncate">{userProfile?.display_name || "Administrator"}</p>
           <button
             type="button"
-            onClick={logout}
+            onClick={handleLogoutClick}
             className="w-full py-2 rounded-sign border border-white/20 hover:bg-background/10 transition-colors"
           >
             Log out
@@ -101,5 +151,16 @@ export default function AdminDashboard() {
         </Routes>
       </div>
     </div>
+
+    <ConfirmModal
+      open={showBackLogoutModal}
+      title="Log out?"
+      message="You will be logged out and returned to the admin login page."
+      confirmLabel="Log out"
+      cancelLabel="Cancel"
+      onConfirm={handleBackLogoutConfirm}
+      onCancel={handleBackLogoutCancel}
+    />
+    </>
   );
 }
