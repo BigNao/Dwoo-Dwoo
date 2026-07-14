@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import Navbar from "../components/Navbar.jsx";
-import { useAuth } from "../context/AuthContext.jsx";
-import api from "../utils/api.js";
-import { INCIDENT_CATEGORIES } from "../utils/constants.js";
+import { useAuth } from "../../../context/AuthContext.jsx";
+import api from "../../../utils/api.js";
+import { INCIDENT_CATEGORIES } from "../../../utils/constants.js";
 
 // Default Leaflet marker icons don't load correctly under bundlers unless
 // explicitly re-pointed at the CDN assets.
@@ -17,7 +16,7 @@ const markerIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-const STEPS = ["Submission Type", "Incident Type", "Description", "Location", "Photo"];
+const STEPS = ["Incident Type", "Description", "Location", "Photo"];
 const GHANA_DEFAULT_CENTER = [7.9465, -1.0232]; // rough geographic centre of Ghana
 
 function DraggableMarker({ position, onChange }) {
@@ -42,9 +41,8 @@ function DraggableMarker({ position, onChange }) {
   );
 }
 
-export default function ReportForm() {
+export default function DashboardReportForm() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { currentUser } = useAuth();
   const fileInputRef = useRef(null);
 
@@ -54,21 +52,13 @@ export default function ReportForm() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [confirmation, setConfirmation] = useState(null);
 
-  const [submissionType, setSubmissionType] = useState(currentUser ? "registered" : "");
+  const [submissionType] = useState("registered"); // Always registered for dashboard users
   const [incidentType, setIncidentType] = useState("");
   const [description, setDescription] = useState("");
   const [position, setPosition] = useState(null);
   const [locatingGps, setLocatingGps] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-
-  useEffect(() => {
-    const typeParam = searchParams.get("type");
-    if (typeParam && INCIDENT_CATEGORIES.includes(typeParam)) {
-      setIncidentType(typeParam);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const progressPercent = useMemo(() => ((step + 1) / STEPS.length) * 100, [step]);
 
@@ -87,42 +77,24 @@ export default function ReportForm() {
   function validateStep(currentStep) {
     const errors = {};
 
+    // Step 0 is now Incident Type (was step 1 in original)
     if (currentStep === 0) {
-      if (!submissionType) errors.submissionType = "Choose how you'd like to report.";
-      if (submissionType === "registered" && !currentUser) {
-        errors.submissionType = "Please log in first, then return to this form.";
-      }
-    }
-
-    if (currentStep === 1) {
       if (!incidentType) errors.incidentType = "Select an incident type.";
     }
 
-    if (currentStep === 2) {
+    // Step 1 is now Description (was step 2 in original)
+    if (currentStep === 1) {
       if (description.trim().length < 20) {
         errors.description = "Description must be at least 20 characters.";
       }
     }
 
-    if (currentStep === 3) {
+    // Step 2 is now Location (was step 3 in original)
+    if (currentStep === 2) {
       if (!position) errors.location = "Confirm a location on the map.";
     }
 
     return errors;
-  }
-
-  function handleSelectAnonymous() {
-    setSubmissionType("anonymous");
-    setFieldErrors({});
-  }
-
-  function handleSelectRegistered() {
-    if (!currentUser) {
-      navigate("/login", { state: { from: "/report" } });
-      return;
-    }
-    setSubmissionType("registered");
-    setFieldErrors({});
   }
 
   function detectGps() {
@@ -218,152 +190,93 @@ export default function ReportForm() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors mb-4"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
-        <h1 className="font-display text-3xl font-semibold mb-2">Report an Incident</h1>
-        <p className="text-sm text-muted mb-8">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Report an Incident</h2>
+        <p className="text-sm text-muted mb-6">
           Step {step + 1} of {STEPS.length} — {STEPS[step]}
         </p>
 
-        <div className="h-1.5 w-full bg-border rounded-full mb-10 overflow-hidden">
+        <div className="h-1.5 w-full bg-border rounded-full mb-8 overflow-hidden">
           <div
             className="h-full bg-primary transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
+      </div>
 
-        {step === 0 && (
-          <StepSubmissionType
-            submissionType={submissionType}
-            onAnonymous={handleSelectAnonymous}
-            onRegistered={handleSelectRegistered}
-            error={fieldErrors.submissionType}
-            currentUser={currentUser}
-          />
-        )}
+      {step === 0 && (
+        <StepIncidentType
+          incidentType={incidentType}
+          setIncidentType={setIncidentType}
+          error={fieldErrors.incidentType}
+        />
+      )}
 
-        {step === 1 && (
-          <StepIncidentType
-            incidentType={incidentType}
-            setIncidentType={setIncidentType}
-            error={fieldErrors.incidentType}
-          />
-        )}
+      {step === 1 && (
+        <StepDescription
+          description={description}
+          setDescription={setDescription}
+          error={fieldErrors.description}
+        />
+      )}
 
-        {step === 2 && (
-          <StepDescription
-            description={description}
-            setDescription={setDescription}
-            error={fieldErrors.description}
-          />
-        )}
+      {step === 2 && (
+        <StepLocation
+          position={position}
+          setPosition={setPosition}
+          detectGps={detectGps}
+          locatingGps={locatingGps}
+          error={fieldErrors.location}
+        />
+      )}
 
-        {step === 3 && (
-          <StepLocation
-            position={position}
-            setPosition={setPosition}
-            detectGps={detectGps}
-            locatingGps={locatingGps}
-            error={fieldErrors.location}
-          />
-        )}
+      {step === 3 && (
+        <StepPhoto
+          photoPreview={photoPreview}
+          onChange={handlePhotoChange}
+          onRemove={removePhoto}
+          fileInputRef={fileInputRef}
+          error={fieldErrors.photo}
+        />
+      )}
 
-        {step === 4 && (
-          <StepPhoto
-            photoPreview={photoPreview}
-            onChange={handlePhotoChange}
-            onRemove={removePhoto}
-            fileInputRef={fileInputRef}
-            error={fieldErrors.photo}
-          />
-        )}
+      {submitError && (
+        <p className="mt-6 text-sm text-danger font-medium" role="alert">
+          {submitError}
+        </p>
+      )}
 
-        {submitError && (
-          <p className="mt-6 text-sm text-danger font-medium" role="alert">
-            {submitError}
-          </p>
-        )}
+      <div className="flex items-center justify-between gap-3 pt-4">
+        <button
+          type="button"
+          onClick={goBack}
+          disabled={step === 0}
+          className="px-4 sm:px-5 py-2.5 rounded-sign border border-border font-medium disabled:opacity-30 disabled:cursor-not-allowed text-sm sm:text-base"
+        >
+          Back
+        </button>
 
-        <div className="mt-10 flex items-center justify-between gap-3">
+        {step < STEPS.length - 1 ? (
           <button
             type="button"
-            onClick={goBack}
-            disabled={step === 0}
-            className="px-4 sm:px-5 py-2.5 rounded-sign border border-border font-medium disabled:opacity-30 disabled:cursor-not-allowed text-sm sm:text-base"
+            onClick={goNext}
+            className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm sm:text-base whitespace-nowrap"
           >
-            Back
+            Continue
           </button>
-
-          {step < STEPS.length - 1 ? (
-            <button
-              type="button"
-              onClick={goNext}
-              className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm sm:text-base whitespace-nowrap"
-            >
-              Continue
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 text-sm sm:text-base whitespace-nowrap"
-            >
-              {submitting ? "Submitting…" : "Submit Report"}
-            </button>
-          )}
-        </div>
-      </main>
-    </div>
-  );
-
-  // ----- Sub-step renderers (kept in-file for shared form state) -----
-
-  function StepSubmissionType({ onAnonymous, onRegistered, error }) {
-    return (
-      <div className="space-y-4">
-        <OptionCard
-          selected={submissionType === "anonymous"}
-          title="Report Anonymously"
-          body="No account needed. Submit now, keep your reference number to track it."
-          onClick={onAnonymous}
-        />
-        <OptionCard
-          selected={submissionType === "registered"}
-          title="Report as Registered User"
-          body="Log in so this report appears in your My Reports list."
-          onClick={onRegistered}
-        />
-        {error && <p className="text-sm text-danger font-medium">{error}</p>}
+        ) : (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 text-sm sm:text-base whitespace-nowrap"
+          >
+            {submitting ? "Submitting…" : "Submit Report"}
+          </button>
+        )}
       </div>
-    );
-  }
-}
-
-function OptionCard({ selected, title, body, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full text-left p-5 rounded-sign border-2 transition-colors ${
-        selected ? "border-primary bg-primary/5" : "border-border hover:border-border"
-      }`}
-    >
-      <p className="font-display font-semibold text-lg">{title}</p>
-      <p className="text-sm text-muted mt-1">{body}</p>
-    </button>
+    </div>
   );
 }
 
@@ -495,43 +408,38 @@ function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
 
 function ConfirmationScreen({ confirmation, navigate }) {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Navbar />
-      <main className="flex-1 flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-white text-2xl mb-6">
-            ✓
-          </div>
-          <h1 className="font-display text-3xl font-semibold mb-3">Report submitted</h1>
-          <p className="text-muted mb-8">Save this reference number to track your report.</p>
+    <div className="text-center py-8">
+      <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-white text-2xl mb-6">
+        ✓
+      </div>
+      <h2 className="text-2xl font-semibold mb-3">Report submitted</h2>
+      <p className="text-muted mb-8">Save this reference number to track your report.</p>
 
-          <div className="rounded-sign border-2 border-dashed border-accent px-6 py-5 mb-8">
-            <p className="text-xs font-mono uppercase tracking-widest text-muted/80 mb-1">
-              Reference Number
-            </p>
-            <p className="font-mono text-2xl font-semibold tracking-widest">
-              {confirmation.reference_number}
-            </p>
-          </div>
+      <div className="rounded-sign border-2 border-dashed border-accent px-6 py-5 mb-8">
+        <p className="text-xs font-mono uppercase tracking-widest text-muted/80 mb-1">
+          Reference Number
+        </p>
+        <p className="font-mono text-2xl font-semibold tracking-widest">
+          {confirmation.reference_number}
+        </p>
+      </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              type="button"
-              onClick={() => navigate("/track")}
-              className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
-            >
-              Track this report
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="px-6 py-3 rounded-sign border border-border font-semibold hover:bg-primary/5 transition-colors"
-            >
-              Back home
-            </button>
-          </div>
-        </div>
-      </main>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <button
+          type="button"
+          onClick={() => navigate("/citizen/reports")}
+          className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
+        >
+          View My Reports
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/citizen/dashboard")}
+          className="px-6 py-3 rounded-sign border border-border font-semibold hover:bg-primary/5 transition-colors"
+        >
+          Back to Dashboard
+        </button>
+      </div>
     </div>
   );
 }

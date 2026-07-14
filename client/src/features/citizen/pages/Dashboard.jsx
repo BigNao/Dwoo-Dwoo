@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import CitizenDashboardLayout from '../layouts/CitizenDashboardLayout';
@@ -9,10 +9,12 @@ import EmptyState from '../components/EmptyState';
 import FloatingReportButton from '../components/FloatingReportButton';
 import NearbyIncidentsMap from '../components/NearbyIncidentsMap';
 import { useCitizenReports } from '../hooks/useCitizenReports';
+import DashboardReportForm from './DashboardReportForm';
 
 export default function Dashboard() {
   const { userProfile } = useAuth();
   const { reports, stats, loading, error } = useCitizenReports();
+  const [showReportForm, setShowReportForm] = useState(false);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -30,7 +32,7 @@ export default function Dashboard() {
       ),
       label: 'Report New Incident',
       description: 'Submit a new crime report',
-      to: '/report',
+      onClick: () => setShowReportForm(true),
     },
     {
       icon: ({ className }) => (
@@ -86,14 +88,31 @@ export default function Dashboard() {
           <h3 className="font-semibold mb-4">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {quickActions.map((action, index) => (
-              <Link key={action.label} to={action.to}>
-                <QuickActionCard
-                  icon={action.icon}
-                  label={action.label}
-                  description={action.description}
-                  accent={index === 0}
-                />
-              </Link>
+              <div key={action.label}>
+                {action.to ? (
+                  <Link to={action.to}>
+                    <QuickActionCard
+                      icon={action.icon}
+                      label={action.label}
+                      description={action.description}
+                      accent={index === 0}
+                    />
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={action.onClick}
+                    className="w-full text-left"
+                  >
+                    <QuickActionCard
+                      icon={action.icon}
+                      label={action.label}
+                      description={action.description}
+                      accent={index === 0}
+                    />
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -158,12 +177,13 @@ export default function Dashboard() {
               title="No reports yet"
               description="You haven't submitted any reports. Start by reporting an incident."
               action={
-                <Link
-                  to="/report"
+                <button
+                  type="button"
+                  onClick={() => setShowReportForm(true)}
                   className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
                 >
                   Create your first report
-                </Link>
+                </button>
               }
             />
           )}
@@ -182,7 +202,27 @@ export default function Dashboard() {
         )}
       </div>
 
-      <FloatingReportButton />
+      {showReportForm && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="min-h-screen px-4 py-8">
+            <div className="max-w-2xl mx-auto bg-card rounded-lg border border-border p-6 sm:p-8">
+              <button
+                type="button"
+                onClick={() => setShowReportForm(false)}
+                className="flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors mb-6"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancel
+              </button>
+              <DashboardReportForm />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <FloatingReportButton onClick={() => setShowReportForm(true)} />
     </CitizenDashboardLayout>
   );
 }
