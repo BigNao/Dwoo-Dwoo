@@ -20,13 +20,16 @@ const markerIcon = new L.Icon({
 const STEPS = ["Submission Type", "Incident Type", "Description", "Location", "Photo"];
 const GHANA_DEFAULT_CENTER = [7.9465, -1.0232]; // rough geographic centre of Ghana
 
-function DraggableMarker({ position, onChange }) {
+function MapClickHandler({ onClick }) {
   useMapEvents({
     click(e) {
-      onChange([e.latlng.lat, e.latlng.lng]);
+      onClick([e.latlng.lat, e.latlng.lng]);
     },
   });
+  return null;
+}
 
+function DraggableMarker({ position, onChange }) {
   return (
     <Marker
       position={position}
@@ -335,27 +338,6 @@ export default function ReportForm() {
     </div>
   );
 
-  // ----- Sub-step renderers (kept in-file for shared form state) -----
-
-  function StepSubmissionType({ onAnonymous, onRegistered, error }) {
-    return (
-      <div className="space-y-4">
-        <OptionCard
-          selected={submissionType === "anonymous"}
-          title="Report Anonymously"
-          body="No account needed. Submit now, keep your reference number to track it."
-          onClick={onAnonymous}
-        />
-        <OptionCard
-          selected={submissionType === "registered"}
-          title="Report as Registered User"
-          body="Log in so this report appears in your My Reports list."
-          onClick={onRegistered}
-        />
-        {error && <p className="text-sm text-danger font-medium">{error}</p>}
-      </div>
-    );
-  }
 }
 
 function OptionCard({ selected, title, body, onClick }) {
@@ -420,47 +402,7 @@ function StepDescription({ description, setDescription, error }) {
   );
 }
 
-function StepLocation({ position, setPosition, detectGps, locatingGps, error }) {
-  const center = position || GHANA_DEFAULT_CENTER;
 
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-medium">Incident location</label>
-        <button
-          type="button"
-          onClick={detectGps}
-          disabled={locatingGps}
-          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-border hover:bg-primary hover:text-white transition-colors disabled:opacity-50"
-        >
-          {locatingGps ? "Locating…" : "Use My Location"}
-        </button>
-      </div>
-
-      <div className="h-56 sm:h-72 w-full rounded-sign overflow-hidden border border-border">
-        <MapContainer center={center} zoom={position ? 15 : 7} style={{ height: "100%", width: "100%" }}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {position && <DraggableMarker position={position} onChange={setPosition} />}
-        </MapContainer>
-      </div>
-
-      <p className="mt-2 text-xs text-muted/80">
-        Tap the map or drag the pin to fine-tune the exact spot.
-      </p>
-
-      {position && (
-        <p className="mt-2 font-mono text-xs text-muted">
-          {position[0].toFixed(5)}, {position[1].toFixed(5)}
-        </p>
-      )}
-
-      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
-    </div>
-  );
-}
 
 function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
   return (
@@ -492,6 +434,69 @@ function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
             Remove
           </button>
         </div>
+      )}
+
+      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
+    </div>
+  );
+}
+
+function StepSubmissionType({ submissionType, onAnonymous, onRegistered, error }) {
+  return (
+    <div className="space-y-4">
+      <OptionCard
+        selected={submissionType === "anonymous"}
+        title="Report Anonymously"
+        body="No account needed. Submit now, keep your reference number to track it."
+        onClick={onAnonymous}
+      />
+      <OptionCard
+        selected={submissionType === "registered"}
+        title="Report as Registered User"
+        body="Log in so this report appears in your My Reports list."
+        onClick={onRegistered}
+      />
+      {error && <p className="text-sm text-danger font-medium">{error}</p>}
+    </div>
+  );
+}
+
+function StepLocation({ position, setPosition, detectGps, locatingGps, error }) {
+  const center = position || GHANA_DEFAULT_CENTER;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <label className="block text-sm font-medium">Incident location</label>
+        <button
+          type="button"
+          onClick={detectGps}
+          disabled={locatingGps}
+          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-border hover:bg-primary hover:text-white transition-colors disabled:opacity-50"
+        >
+          {locatingGps ? "Locating…" : "Use My Location"}
+        </button>
+      </div>
+
+      <div className="h-56 sm:h-72 w-full rounded-sign overflow-hidden border border-border">
+        <MapContainer center={center} zoom={position ? 15 : 7} style={{ height: "100%", width: "100%" }}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapClickHandler onClick={setPosition} />
+          {position && <DraggableMarker position={position} onChange={setPosition} />}
+        </MapContainer>
+      </div>
+
+      <p className="mt-2 text-xs text-muted/80">
+        Tap the map or drag the pin to fine-tune the exact spot.
+      </p>
+
+      {position && (
+        <p className="mt-2 font-mono text-xs text-muted">
+          {position[0].toFixed(5)}, {position[1].toFixed(5)}
+        </p>
       )}
 
       {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}

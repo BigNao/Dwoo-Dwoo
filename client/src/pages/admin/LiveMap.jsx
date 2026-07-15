@@ -25,12 +25,23 @@ export default function LiveMap() {
     return unsubscribe;
   }, []);
 
+  const validReports = reports.filter(
+    (r) => r.latitude != null && r.longitude != null && !Number.isNaN(r.latitude) && !Number.isNaN(r.longitude)
+  );
+  const skippedCount = reports.length - validReports.length;
+
   return (
     <div className="h-screen flex flex-col">
       <header className="h-16 flex items-center px-8 border-b border-white/10">
         <h1 className="font-display text-xl font-semibold">Live Map</h1>
         <span className="ml-3 text-xs font-mono text-white/50">
-          {reports.length} report{reports.length === 1 ? "" : "s"} · updating in real time
+          {validReports.length} report{validReports.length === 1 ? "" : "s"} with location
+          {skippedCount > 0 && (
+            <span className="text-danger ml-2">
+              · {skippedCount} without coordinates
+            </span>
+          )}
+          · updating in real time
         </span>
       </header>
 
@@ -41,7 +52,7 @@ export default function LiveMap() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {reports.map((report) => (
+          {validReports.map((report) => (
             <CircleMarker
               key={report.report_id}
               center={[report.latitude, report.longitude]}

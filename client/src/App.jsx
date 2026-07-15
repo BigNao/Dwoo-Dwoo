@@ -18,6 +18,7 @@ const CitizenReportDetails = lazy(() => import("./features/citizen/pages/ReportD
 const CitizenNotifications = lazy(() => import("./features/citizen/pages/Notifications.jsx"));
 const CitizenProfile = lazy(() => import("./features/citizen/pages/Profile.jsx"));
 const CitizenSettings = lazy(() => import("./features/citizen/pages/Settings.jsx"));
+const CitizenNewReport = lazy(() => import("./features/citizen/pages/NewReportPage.jsx"));
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background">Loading...</div>}>
                 <Routes>
                   <Route index element={<CitizenDashboard />} />
+                  <Route path="new-report" element={<CitizenNewReport />} />
                   <Route path="reports" element={<CitizenReports />} />
                   <Route path="reports/:id" element={<CitizenReportDetails />} />
                   <Route path="notifications" element={<CitizenNotifications />} />

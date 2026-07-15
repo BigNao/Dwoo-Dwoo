@@ -434,7 +434,7 @@ function ConfirmationScreen({ confirmation, navigate }) {
         </button>
         <button
           type="button"
-          onClick={() => navigate("/citizen/dashboard")}
+          onClick={() => navigate("/citizen")}
           className="px-6 py-3 rounded-sign border border-border dark:border-white/20 font-semibold hover:bg-muted/20 dark:hover:bg-white/5 transition-colors text-ink dark:text-white"
         >
           Back to Dashboard
