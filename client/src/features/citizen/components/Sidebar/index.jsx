@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthContext';
 import { SIDEBAR_ITEMS } from '../../constants/sidebar';
+import { useLogoutConfirm } from '../../layouts/CitizenDashboardLayout';
 
 export default function Sidebar() {
-  const { userProfile, logout } = useAuth();
+  const { userProfile } = useAuth();
+  const requestLogout = useLogoutConfirm();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside
-      className={`hidden lg:flex flex-col bg-card border-r border-border transition-all duration-300 ${
+      className={`hidden lg:flex flex-col bg-card dark:bg-asphalt-light border-r border-border dark:border-white/10 transition-all duration-300 ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
-      <div className="h-16 flex items-center px-6 border-b border-border">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-bold mr-2 shrink-0">
+      <div className="h-16 flex items-center px-6 border-b border-border dark:border-white/10">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary dark:bg-accent text-white dark:text-ink font-bold mr-2 shrink-0">
           K
         </span>
         {!collapsed && <span className="font-display font-semibold">KwansoDwoo</span>}
@@ -29,8 +31,8 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-primary text-white'
-                  : 'text-muted hover:bg-muted hover:text-foreground'
+                  ? 'bg-primary dark:bg-accent text-white dark:text-ink'
+                  : 'text-muted dark:text-white/60 hover:bg-muted dark:hover:bg-white/10 hover:text-ink dark:hover:text-white'
               }`
             }
           >
@@ -46,17 +48,17 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-4 py-4 border-t border-border">
+      <div className="px-4 py-4 border-t border-border dark:border-white/10">
         {!collapsed && (
           <>
-            <p className="text-xs text-muted mb-1">Signed in as</p>
+            <p className="text-xs text-muted dark:text-white/50 mb-1">Signed in as</p>
             <p className="font-medium text-sm mb-3 truncate">{userProfile?.display_name || 'Citizen'}</p>
           </>
         )}
         <button
           type="button"
-          onClick={logout}
-          className="w-full py-2 rounded-lg border border-border hover:bg-muted transition-colors text-sm font-medium"
+          onClick={requestLogout}
+          className="w-full py-2 rounded-lg border border-border dark:border-white/20 hover:bg-muted dark:hover:bg-white/10 transition-colors text-sm font-medium"
         >
           {collapsed ? (
             <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

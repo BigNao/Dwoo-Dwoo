@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminRoute from "./components/PrivateRoute.jsx";
 import CitizenRoute from "./components/CitizenRoute.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 
 const CitizenDashboard = lazy(() => import("./features/citizen/pages/Dashboard.jsx"));
 const CitizenReports = lazy(() => import("./features/citizen/pages/Reports.jsx"));
@@ -45,16 +46,18 @@ export default function App() {
         path="/citizen/*"
         element={
           <CitizenRoute>
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background">Loading...</div>}>
-              <Routes>
-                <Route index element={<CitizenDashboard />} />
-                <Route path="reports" element={<CitizenReports />} />
-                <Route path="reports/:id" element={<CitizenReportDetails />} />
-                <Route path="notifications" element={<CitizenNotifications />} />
-                <Route path="profile" element={<CitizenProfile />} />
-                <Route path="settings" element={<CitizenSettings />} />
-              </Routes>
-            </Suspense>
+            <ThemeProvider>
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background">Loading...</div>}>
+                <Routes>
+                  <Route index element={<CitizenDashboard />} />
+                  <Route path="reports" element={<CitizenReports />} />
+                  <Route path="reports/:id" element={<CitizenReportDetails />} />
+                  <Route path="notifications" element={<CitizenNotifications />} />
+                  <Route path="profile" element={<CitizenProfile />} />
+                  <Route path="settings" element={<CitizenSettings />} />
+                </Routes>
+              </Suspense>
+            </ThemeProvider>
           </CitizenRoute>
         }
       />

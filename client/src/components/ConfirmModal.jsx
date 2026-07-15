@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 
 export default function ConfirmModal({
   open,
@@ -11,8 +12,8 @@ export default function ConfirmModal({
 }) {
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+  return createPortal(
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/70" onClick={onCancel} />
       <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <h2 className="text-xl font-semibold mb-3 text-gray-900">{title}</h2>
@@ -34,6 +35,7 @@ export default function ConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -176,19 +176,12 @@ export default function ReportForm() {
     setSubmitting(true);
 
     try {
-      let photoUrl = null;
+      let photoData = null;
+      let photoName = null;
 
       if (photoFile) {
-        const formData = new FormData();
-        formData.append("file", photoFile);
-
-        const uploadResponse = await api.post("/upload/image", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        photoUrl = uploadResponse.data.url;
+        photoData = await fileToBase64(photoFile);
+        photoName = photoFile.name;
       }
 
       const payload = {
@@ -197,7 +190,8 @@ export default function ReportForm() {
         description: description.trim(),
         latitude: position[0],
         longitude: position[1],
-        photo_url: photoUrl,
+        photo_data: photoData,
+        photo_name: photoName,
         user_id: submissionType === "registered" ? currentUser?.uid : null,
       };
 
@@ -211,6 +205,18 @@ export default function ReportForm() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
   }
 
   if (confirmation) {
