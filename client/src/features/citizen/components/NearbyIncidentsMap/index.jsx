@@ -37,10 +37,10 @@ export default function NearbyIncidentsMap({ incidents = [], center = [5.6037, -
   const verifiedIncidents = incidents.filter((i) => i.status === 'verified' && i.location);
 
   return (
-    <div className="bg-card rounded-lg border border-border overflow-hidden">
-      <div className="p-4 border-b border-border">
-        <h3 className="font-semibold">Nearby Incidents</h3>
-        <p className="text-sm text-muted">{verifiedIncidents.length} verified reports nearby</p>
+    <div className="bg-card dark:bg-asphalt-light rounded-lg border border-border dark:border-white/10 overflow-hidden">
+      <div className="p-4 border-b border-border dark:border-white/10">
+        <h3 className="font-semibold text-ink dark:text-white">Nearby Incidents</h3>
+        <p className="text-sm text-muted dark:text-white/60">{verifiedIncidents.length} verified reports nearby</p>
       </div>
       <div className="h-48 sm:h-64">
         <MapContainer center={userLocation} zoom={zoom} style={{ height: '100%', width: '100%' }}>
@@ -62,7 +62,7 @@ export default function NearbyIncidentsMap({ incidents = [], center = [5.6037, -
               <Popup>
                 <div className="text-sm">
                   <p className="font-medium">{incident.incident_type}</p>
-                  <p className="text-muted">{incident.reference_number}</p>
+                  <p className="text-muted dark:text-white/60">{incident.reference_number}</p>
                 </div>
               </Popup>
             </Marker>

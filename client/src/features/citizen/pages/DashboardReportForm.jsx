@@ -192,14 +192,14 @@ export default function DashboardReportForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold mb-2">Report an Incident</h2>
-        <p className="text-sm text-muted mb-6">
+        <h2 className="text-xl font-semibold mb-2 text-ink dark:text-white">Report an Incident</h2>
+        <p className="text-sm text-muted dark:text-white/60 mb-6">
           Step {step + 1} of {STEPS.length} — {STEPS[step]}
         </p>
 
-        <div className="h-1.5 w-full bg-border rounded-full mb-8 overflow-hidden">
+        <div className="h-1.5 w-full bg-border dark:bg-white/10 rounded-full mb-8 overflow-hidden">
           <div
-            className="h-full bg-primary transition-all duration-300"
+            className="h-full bg-primary dark:bg-accent transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -252,7 +252,7 @@ export default function DashboardReportForm() {
           type="button"
           onClick={goBack}
           disabled={step === 0}
-          className="px-4 sm:px-5 py-2.5 rounded-sign border border-border font-medium disabled:opacity-30 disabled:cursor-not-allowed text-sm sm:text-base"
+          className="px-4 sm:px-5 py-2.5 rounded-sign border border-border dark:border-white/20 font-medium disabled:opacity-30 disabled:cursor-not-allowed text-sm sm:text-base text-ink dark:text-white"
         >
           Back
         </button>
@@ -261,7 +261,7 @@ export default function DashboardReportForm() {
           <button
             type="button"
             onClick={goNext}
-            className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm sm:text-base whitespace-nowrap"
+            className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary dark:bg-accent text-white dark:text-ink font-medium hover:bg-primary-hover dark:hover:bg-accent-dark transition-colors text-sm sm:text-base whitespace-nowrap"
           >
             Continue
           </button>
@@ -270,7 +270,7 @@ export default function DashboardReportForm() {
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 text-sm sm:text-base whitespace-nowrap"
+            className="px-4 sm:px-6 py-2.5 rounded-sign bg-primary dark:bg-accent text-white dark:text-ink font-semibold hover:bg-primary-hover dark:hover:bg-accent-dark transition-colors disabled:opacity-50 text-sm sm:text-base whitespace-nowrap"
           >
             {submitting ? "Submitting…" : "Submit Report"}
           </button>
@@ -283,14 +283,14 @@ export default function DashboardReportForm() {
 function StepIncidentType({ incidentType, setIncidentType, error }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2" htmlFor="incident-type">
+      <label className="block text-sm font-medium mb-2 text-ink dark:text-white" htmlFor="incident-type">
         Incident type
       </label>
       <select
         id="incident-type"
         value={incidentType}
         onChange={(e) => setIncidentType(e.target.value)}
-        className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
+        className="w-full rounded-sign border border-border dark:border-white/10 px-4 py-3 bg-card dark:bg-asphalt-light text-ink dark:text-white focus:border-primary dark:focus:border-accent"
       >
         <option value="">Select a category…</option>
         {INCIDENT_CATEGORIES.map((cat) => (
@@ -307,7 +307,7 @@ function StepIncidentType({ incidentType, setIncidentType, error }) {
 function StepDescription({ description, setDescription, error }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2" htmlFor="description">
+      <label className="block text-sm font-medium mb-2 text-ink dark:text-white" htmlFor="description">
         What happened?
       </label>
       <textarea
@@ -316,11 +316,11 @@ function StepDescription({ description, setDescription, error }) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Describe the incident: what you saw, when, and anything else responders should know…"
-        className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary resize-none"
+        className="w-full rounded-sign border border-border dark:border-white/10 px-4 py-3 bg-card dark:bg-asphalt-light text-ink dark:text-white focus:border-primary dark:focus:border-accent resize-none"
       />
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-muted/80">Minimum 20 characters.</p>
-        <p className="text-xs font-mono text-muted/80">{description.trim().length} chars</p>
+        <p className="text-xs text-muted/80 dark:text-white/40">Minimum 20 characters.</p>
+        <p className="text-xs font-mono text-muted/80 dark:text-white/40">{description.trim().length} chars</p>
       </div>
       {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
     </div>
@@ -333,18 +333,18 @@ function StepLocation({ position, setPosition, detectGps, locatingGps, error }) 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-medium">Incident location</label>
+        <label className="block text-sm font-medium text-ink dark:text-white">Incident location</label>
         <button
           type="button"
           onClick={detectGps}
           disabled={locatingGps}
-          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-border hover:bg-primary hover:text-white transition-colors disabled:opacity-50"
+          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-border dark:border-white/20 hover:bg-primary dark:hover:bg-accent hover:text-white dark:hover:text-ink transition-colors disabled:opacity-50 text-muted dark:text-white/60"
         >
           {locatingGps ? "Locating…" : "Use My Location"}
         </button>
       </div>
 
-      <div className="h-56 sm:h-72 w-full rounded-sign overflow-hidden border border-border">
+      <div className="h-56 sm:h-72 w-full rounded-sign overflow-hidden border border-border dark:border-white/10">
         <MapContainer center={center} zoom={position ? 15 : 7} style={{ height: "100%", width: "100%" }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -354,12 +354,12 @@ function StepLocation({ position, setPosition, detectGps, locatingGps, error }) 
         </MapContainer>
       </div>
 
-      <p className="mt-2 text-xs text-muted/80">
+      <p className="mt-2 text-xs text-muted/80 dark:text-white/40">
         Tap the map or drag the pin to fine-tune the exact spot.
       </p>
 
       {position && (
-        <p className="mt-2 font-mono text-xs text-muted">
+        <p className="mt-2 font-mono text-xs text-muted dark:text-white/60">
           {position[0].toFixed(5)}, {position[1].toFixed(5)}
         </p>
       )}
@@ -372,14 +372,14 @@ function StepLocation({ position, setPosition, detectGps, locatingGps, error }) 
 function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2">
-        Photo <span className="text-muted/70 font-normal">(optional)</span>
+      <label className="block text-sm font-medium mb-2 text-ink dark:text-white">
+        Photo <span className="text-muted/70 dark:text-white/40 font-normal">(optional)</span>
       </label>
 
       {!photoPreview ? (
-        <label className="flex flex-col items-center justify-center gap-2 h-40 rounded-sign border-2 border-dashed border-border cursor-pointer hover:border-ink/40 transition-colors">
-          <span className="text-sm text-muted">Tap to choose a photo</span>
-          <span className="text-xs text-muted/70">JPG, PNG, or WEBP</span>
+        <label className="flex flex-col items-center justify-center gap-2 h-40 rounded-sign border-2 border-dashed border-border dark:border-white/20 cursor-pointer hover:border-ink/40 dark:hover:border-white/40 transition-colors">
+          <span className="text-sm text-muted dark:text-white/60">Tap to choose a photo</span>
+          <span className="text-xs text-muted/70 dark:text-white/40">JPG, PNG, or WEBP</span>
           <input
             ref={fileInputRef}
             type="file"
@@ -394,7 +394,7 @@ function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
           <button
             type="button"
             onClick={onRemove}
-            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-mono uppercase bg-primary-hover text-white rounded-sign"
+            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-mono uppercase bg-black/50 text-white rounded-sign"
           >
             Remove
           </button>
@@ -412,14 +412,14 @@ function ConfirmationScreen({ confirmation, navigate }) {
       <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-white text-2xl mb-6">
         ✓
       </div>
-      <h2 className="text-2xl font-semibold mb-3">Report submitted</h2>
-      <p className="text-muted mb-8">Save this reference number to track your report.</p>
+      <h2 className="text-2xl font-semibold mb-3 text-ink dark:text-white">Report submitted</h2>
+      <p className="text-muted dark:text-white/60 mb-8">Save this reference number to track your report.</p>
 
       <div className="rounded-sign border-2 border-dashed border-accent px-6 py-5 mb-8">
-        <p className="text-xs font-mono uppercase tracking-widest text-muted/80 mb-1">
+        <p className="text-xs font-mono uppercase tracking-widest text-muted/80 dark:text-white/40 mb-1">
           Reference Number
         </p>
-        <p className="font-mono text-2xl font-semibold tracking-widest">
+        <p className="font-mono text-2xl font-semibold tracking-widest text-accent">
           {confirmation.reference_number}
         </p>
       </div>
@@ -428,14 +428,14 @@ function ConfirmationScreen({ confirmation, navigate }) {
         <button
           type="button"
           onClick={() => navigate("/citizen/reports")}
-          className="px-6 py-3 rounded-sign bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
+          className="px-6 py-3 rounded-sign bg-primary dark:bg-accent text-white dark:text-ink font-semibold hover:bg-primary-hover dark:hover:bg-accent-dark transition-colors"
         >
           View My Reports
         </button>
         <button
           type="button"
           onClick={() => navigate("/citizen/dashboard")}
-          className="px-6 py-3 rounded-sign border border-border font-semibold hover:bg-primary/5 transition-colors"
+          className="px-6 py-3 rounded-sign border border-border dark:border-white/20 font-semibold hover:bg-muted/20 dark:hover:bg-white/5 transition-colors text-ink dark:text-white"
         >
           Back to Dashboard
         </button>

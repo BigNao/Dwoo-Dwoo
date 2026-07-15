@@ -4,7 +4,7 @@ import BottomNavigation from '../components/BottomNavigation';
 
 export default function CitizenMobileLayout({ children, title, breadcrumb }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-asphalt dark:text-white text-ink">
       <DashboardHeader title={title} breadcrumb={breadcrumb} />
       <main className="p-4 pb-20">
         {children}

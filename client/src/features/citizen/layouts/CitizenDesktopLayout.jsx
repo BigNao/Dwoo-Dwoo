@@ -4,7 +4,7 @@ import DashboardHeader from '../components/DashboardHeader';
 
 export default function CitizenDesktopLayout({ children, title, breadcrumb }) {
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background dark:bg-asphalt dark:text-white text-ink flex">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <DashboardHeader title={title} breadcrumb={breadcrumb} />

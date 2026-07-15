@@ -27,13 +27,13 @@ export default function Notifications() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-semibold">Notifications</h2>
-            <p className="text-muted">{unreadCount} unread</p>
+            <h2 className="text-2xl font-semibold text-ink dark:text-white">Notifications</h2>
+            <p className="text-muted dark:text-white/60">{unreadCount} unread</p>
           </div>
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="text-sm text-primary hover:underline shrink-0"
+              className="text-sm text-primary dark:text-accent hover:underline shrink-0"
             >
               Mark all as read
             </button>
@@ -56,7 +56,7 @@ export default function Notifications() {
           <div className="space-y-6">
             {groupedNotifications.today.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3 text-sm text-muted uppercase tracking-wide">Today</h3>
+                <h3 className="font-medium mb-3 text-sm text-muted dark:text-white/50 uppercase tracking-wide">Today</h3>
                 <div className="space-y-3">
                   {groupedNotifications.today.map((notification) => (
                     <NotificationCard
@@ -71,7 +71,7 @@ export default function Notifications() {
 
             {groupedNotifications.yesterday.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3 text-sm text-muted uppercase tracking-wide">Yesterday</h3>
+                <h3 className="font-medium mb-3 text-sm text-muted dark:text-white/50 uppercase tracking-wide">Yesterday</h3>
                 <div className="space-y-3">
                   {groupedNotifications.yesterday.map((notification) => (
                     <NotificationCard
@@ -86,7 +86,7 @@ export default function Notifications() {
 
             {groupedNotifications.older.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3 text-sm text-muted uppercase tracking-wide">Older</h3>
+                <h3 className="font-medium mb-3 text-sm text-muted dark:text-white/50 uppercase tracking-wide">Older</h3>
                 <div className="space-y-3">
                   {groupedNotifications.older.map((notification) => (
                     <NotificationCard

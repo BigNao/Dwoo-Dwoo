@@ -4,7 +4,7 @@ import { BOTTOM_NAV_ITEMS } from '../../constants/bottomNav';
 
 export default function BottomNavigation() {
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-area-bottom">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-card dark:bg-asphalt-light border-t border-border dark:border-white/10 z-50 safe-area-bottom">
       <div className="grid grid-cols-5 h-16 pb-safe">
         {BOTTOM_NAV_ITEMS.map((item, i) => (
           <NavLink
@@ -13,12 +13,12 @@ export default function BottomNavigation() {
             end={item.to === '/citizen'}
             className={({ isActive }) =>
               `flex flex-col items-center justify-center transition-colors ${
-                isActive ? 'text-primary' : 'text-muted'
+                isActive ? 'text-primary dark:text-accent' : 'text-muted dark:text-white/50'
               } ${item.isPrimary ? '-mt-4' : 'pt-1'}`
             }
           >
             {item.isPrimary ? (
-              <div className="bg-primary text-white p-3 rounded-full shadow-lg">
+              <div className="bg-primary dark:bg-accent text-white dark:text-ink p-3 rounded-full shadow-lg">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
