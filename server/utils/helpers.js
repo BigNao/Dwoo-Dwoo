@@ -41,4 +41,8 @@ function distanceInKm(lat1, lon1, lat2, lon2) {
   return earthRadiusKm * c;
 }
 
-module.exports = { generateReferenceNumber, generateReportId, generateLogId, distanceInKm };
+function generateNotificationId() {
+  return randomUUID();
+}
+
+module.exports = { generateReferenceNumber, generateReportId, generateLogId, generateNotificationId, distanceInKm };
