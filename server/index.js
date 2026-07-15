@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 
 const reportsRouter = require("./routes/reports");
+const uploadRouter = require("./routes/upload");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/reports", reportsRouter);
+app.use("/api/upload", uploadRouter);
 
 // 404 handler
 app.use((req, res) => {

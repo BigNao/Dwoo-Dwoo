@@ -107,7 +107,7 @@ export default function Reports() {
               <ReportCard
                 key={report.id}
                 report={report}
-                onClick={() => navigate(`/citizen/reports/${report.report_id}`)}
+                onClick={() => navigate(`/citizen/reports/${report.reference_number}`)}
               />
             ))}
           </div>

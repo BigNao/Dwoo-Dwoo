@@ -10,6 +10,7 @@ const PAGE_SIZE = 20;
 const COLUMNS = [
   { key: "reference_number", label: "Reference No." },
   { key: "incident_type", label: "Incident Type" },
+  { key: "user", label: "User" },
   { key: "location", label: "Location" },
   { key: "status", label: "Status" },
   { key: "confidence_score", label: "Confidence Score" },
@@ -100,6 +101,9 @@ export default function ReportsList() {
       } else if (sortKey === "location") {
         av = a.latitude;
         bv = b.latitude;
+      } else if (sortKey === "user") {
+        av = a.user_display_name;
+        bv = b.user_display_name;
       } else {
         av = a[sortKey];
         bv = b[sortKey];
@@ -122,6 +126,7 @@ export default function ReportsList() {
     const rows = sortedReports.map((r) => ({
       reference_number: r.reference_number,
       incident_type: r.incident_type,
+      user: r.user_display_name || (r.submission_type === "anonymous" ? "Anonymous" : r.user_id),
       description: r.description,
       latitude: r.latitude,
       longitude: r.longitude,
@@ -249,6 +254,11 @@ export default function ReportsList() {
                 >
                   <td className="py-3 pr-4 font-mono">{report.reference_number}</td>
                   <td className="py-3 pr-4">{report.incident_type}</td>
+                  <td className="py-3 pr-4">
+                    <span className={`text-xs font-medium ${report.submission_type === "anonymous" ? "text-white/40" : "text-white"}`}>
+                      {report.user_display_name || (report.submission_type === "anonymous" ? "Anonymous" : report.user_id)}
+                    </span>
+                  </td>
                   <td className="py-3 pr-4 font-mono text-xs">
                     {report.latitude?.toFixed(4)}, {report.longitude?.toFixed(4)}
                   </td>

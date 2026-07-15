@@ -1,9 +1,21 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import SuccessModal from "../components/SuccessModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+
+function getPasswordStrength(password) {
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) score += 1;
+
+  if (score <= 1) return { label: "Weak", color: "bg-danger", width: "w-1/3", textColor: "text-danger" };
+  if (score === 2) return { label: "Medium", color: "bg-yellow-500", width: "w-2/3", textColor: "text-yellow-600" };
+  return { label: "Strong", color: "bg-green-500", width: "w-full", textColor: "text-green-600" };
+}
 
 export default function Register() {
   const { register } = useAuth();
@@ -18,10 +30,12 @@ export default function Register() {
   const [formError, setFormError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  const strength = useMemo(() => getPasswordStrength(password), [password]);
+
   function validate() {
     const errs = {};
     if (!name.trim()) errs.name = "Name is required.";
-    if (!/^\S+@\S+\.\S+$/.test(email)) errs.email = "Enter a valid email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim())) errs.email = "Enter a valid email address.";
     if (password.length < 6) errs.password = "Password must be at least 6 characters.";
     return errs;
   }
@@ -74,6 +88,7 @@ export default function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-sign border border-border px-4 py-3 bg-card focus:border-primary"
+              autoComplete="email"
             />
           </Field>
 
@@ -103,6 +118,18 @@ export default function Register() {
                 )}
               </button>
             </div>
+            {password.length > 0 && (
+              <div className="mt-2">
+                <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${strength.color} rounded-full transition-all duration-300 ${strength.width}`}
+                  />
+                </div>
+                <p className={`mt-1 text-xs font-medium ${strength.textColor}`}>
+                  {strength.label}
+                </p>
+              </div>
+            )}
           </Field>
 
           {formError && <p className="text-sm text-danger font-medium">{formError}</p>}

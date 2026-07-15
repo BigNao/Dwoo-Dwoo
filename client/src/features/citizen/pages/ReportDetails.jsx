@@ -109,8 +109,8 @@ export default function ReportDetails() {
               <div>
                 <p className="text-xs text-muted/80 dark:text-white/50 uppercase tracking-wide mb-1">Location</p>
                 <p className="font-medium text-ink dark:text-white">
-                  {report.location?.latitude && report.location?.longitude
-                    ? `${report.location.latitude.toFixed(4)}, ${report.location.longitude.toFixed(4)}`
+                  {report.latitude != null && report.longitude != null
+                    ? `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`
                     : 'Not specified'}
                 </p>
               </div>

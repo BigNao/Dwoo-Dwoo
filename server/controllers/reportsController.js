@@ -5,6 +5,7 @@ const {
   generateReferenceNumber,
   generateReportId,
   generateLogId,
+  generateNotificationId,
   distanceInKm,
 } = require("../utils/helpers");
 const {
@@ -17,6 +18,7 @@ const {
 const REPORTS_COLLECTION = "reports";
 const USERS_COLLECTION = "users";
 const ADMIN_LOGS_COLLECTION = "admin_logs";
+const NOTIFICATIONS_COLLECTION = "notifications";
 
 /**
  * Looks for other reports of the same incident_type, within
@@ -282,7 +284,24 @@ async function listReports(req, res) {
       reports = reports.filter((r) => r.confidence_score <= max);
     }
 
-    return res.status(200).json({ reports });
+    // Enrich registered reports with the citizen's display name
+    const enriched = await Promise.all(
+      reports.map(async (report) => {
+        if (report.submission_type === "registered" && report.user_id) {
+          try {
+            const userSnap = await db.collection(USERS_COLLECTION).doc(report.user_id).get();
+            if (userSnap.exists) {
+              const userData = userSnap.data();
+              return { ...report, user_display_name: userData.display_name || userData.email_address || report.user_id };
+            }
+          } catch { }
+          return { ...report, user_display_name: report.user_id };
+        }
+        return { ...report, user_display_name: "Anonymous" };
+      })
+    );
+
+    return res.status(200).json({ reports: enriched });
   } catch (err) {
     console.error("listReports error:", err);
     return res.status(500).json({
@@ -345,6 +364,30 @@ async function updateReport(req, res) {
           action_timestamp: admin.firestore.Timestamp.now(),
           admin_notes: admin_notes !== undefined ? admin_notes : null,
         });
+
+      // Notify the citizen if the report belongs to a registered user
+      const reportData = reportSnap.data();
+      if (reportData.user_id) {
+        const statusLabels = {
+          pending: "Pending",
+          under_review: "Under Review",
+          verified: "Verified",
+          under_investigation: "Under Investigation",
+          resolved: "Resolved",
+          rejected: "Rejected",
+        };
+        const notificationId = generateNotificationId();
+        await db.collection(NOTIFICATIONS_COLLECTION).doc(notificationId).set({
+          notification_id: notificationId,
+          user_id: reportData.user_id,
+          title: "Report Status Updated",
+          message: `Your report ${reportData.reference_number} status has been updated to "${statusLabels[status] || status}".`,
+          timestamp: admin.firestore.Timestamp.now(),
+          read: false,
+          report_id: reportId,
+          reference_number: reportData.reference_number,
+        });
+      }
     }
 
     const updatedSnap = await reportRef.get();
