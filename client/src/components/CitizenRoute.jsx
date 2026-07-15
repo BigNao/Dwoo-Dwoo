@@ -13,8 +13,8 @@ export default function CitizenRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-asphalt">
-        <p className="text-sm text-muted dark:text-white/60 animate-pulse">Loading your dashboard…</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-sm text-muted animate-pulse">Loading your dashboard…</p>
       </div>
     );
   }

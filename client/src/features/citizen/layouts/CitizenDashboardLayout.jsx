@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import CitizenDesktopLayout from './CitizenDesktopLayout';
@@ -6,6 +6,14 @@ import CitizenMobileLayout from './CitizenMobileLayout';
 import { BREAKPOINTS } from '../constants/breakpoints';
 import ConfirmModal from '../../../components/ConfirmModal.jsx';
 import { useAuth } from '../../../context/AuthContext.jsx';
+
+const LogoutContext = createContext(null);
+
+export function useLogoutConfirm() {
+  const ctx = useContext(LogoutContext);
+  if (!ctx) throw new Error('useLogoutConfirm must be used within CitizenDashboardLayout');
+  return ctx;
+}
 
 export default function CitizenDashboardLayout({ children, title, breadcrumb }) {
   const isDesktop = useMediaQuery(`(min-width: ${BREAKPOINTS.DESKTOP}px)`);
@@ -56,29 +64,31 @@ export default function CitizenDashboardLayout({ children, title, breadcrumb }) 
     setShowBackLogoutModal(false);
   }
 
-  const content = <div className="fade-in">{children}</div>;
+  const requestLogout = useCallback(() => {
+    setShowBackLogoutModal(true);
+  }, []);
 
   return (
-    <>
+    <LogoutContext.Provider value={requestLogout}>
       {isDesktop ? (
         <CitizenDesktopLayout title={title} breadcrumb={breadcrumb}>
-          {content}
+          <div className="fade-in">{children}</div>
         </CitizenDesktopLayout>
       ) : (
         <CitizenMobileLayout title={title} breadcrumb={breadcrumb}>
-          {content}
+          <div className="fade-in">{children}</div>
         </CitizenMobileLayout>
       )}
 
       <ConfirmModal
         open={showBackLogoutModal}
-        title="Leave the dashboard?"
-        message="Pressing the browser back button will log you out and return you to the public website."
-        confirmLabel="Log out and leave"
-        cancelLabel="Stay logged in"
+        title="Log out?"
+        message="You will be logged out and returned to the public website."
+        confirmLabel="Log out"
+        cancelLabel="Cancel"
         onConfirm={handleBackLogoutConfirm}
         onCancel={handleBackLogoutCancel}
       />
-    </>
+    </LogoutContext.Provider>
   );
 }

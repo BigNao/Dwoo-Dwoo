@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthContext';
 import { SIDEBAR_ITEMS } from '../../constants/sidebar';
+import { useLogoutConfirm } from '../../layouts/CitizenDashboardLayout';
 
 export default function Sidebar() {
-  const { userProfile, logout } = useAuth();
+  const { userProfile } = useAuth();
+  const requestLogout = useLogoutConfirm();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -55,7 +57,7 @@ export default function Sidebar() {
         )}
         <button
           type="button"
-          onClick={logout}
+          onClick={requestLogout}
           className="w-full py-2 rounded-lg border border-border dark:border-white/20 hover:bg-muted dark:hover:bg-white/10 transition-colors text-sm font-medium"
         >
           {collapsed ? (

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../../context/AuthContext';
 import { useTheme } from '../../../../context/ThemeContext';
+import { useLogoutConfirm } from '../../layouts/CitizenDashboardLayout';
 
 export default function DashboardHeader({ title, breadcrumb }) {
-  const { userProfile, logout } = useAuth();
+  const { userProfile } = useAuth();
+  const requestLogout = useLogoutConfirm();
   const { theme, toggleTheme } = useTheme();
   const [showMenu, setShowMenu] = useState(false);
 
@@ -83,8 +85,8 @@ export default function DashboardHeader({ title, breadcrumb }) {
                 </div>
                 <button
                   onClick={() => {
-                    logout();
                     setShowMenu(false);
+                    requestLogout();
                   }}
                   className="w-full px-4 py-2 text-left text-sm hover:bg-muted dark:hover:bg-white/10 transition-colors"
                 >
