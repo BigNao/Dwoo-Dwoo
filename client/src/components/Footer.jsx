@@ -21,9 +21,9 @@ const COLUMNS = [
   {
     title: "About KwansoDwoo",
     links: [
-      { label: "How Reports Are Reviewed", to: "/#how-it-works" },
-      { label: "Confidence Scoring", to: "/#how-it-works" },
-      { label: "Data & Privacy", to: "#" },
+      { label: "How Reports Are Reviewed", to: "/how-reports-are-reviewed" },
+      { label: "Confidence Scoring", to: "/confidence-scoring" },
+      { label: "Data & Privacy", to: "/data-privacy" },
     ],
   },
 ];

@@ -22,11 +22,11 @@ export const citizenService = {
     );
   },
 
-  getReportDetails: async (referenceNumber) => {
-    const q = query(collection(db, 'reports'), where('reference_number', '==', referenceNumber));
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      return { ...snapshot.docs[0].data(), id: snapshot.docs[0].id };
+  getReportDetails: async (docId) => {
+    const docRef = doc(db, 'reports', docId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { ...docSnap.data(), id: docSnap.id };
     }
     return null;
   },

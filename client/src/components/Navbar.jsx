@@ -71,10 +71,12 @@ export default function Navbar() {
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/assets/images.jpg)' }}></div>
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between text-white">
-          <Link to="/" className="flex items-center gap-2 font-display font-semibold text-lg">
-            <img src="/assets/k-logo.png" alt="KwansoDwoo" className="h-8 w-8 object-contain" />
-            KwansoDwoo
-          </Link>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-sign bg-accent text-ink font-bold text-sm">
+              K
+            </span>
+            <span className="font-display font-semibold text-white">KwansoDwoo</span>
+          </div>
 
           <nav className="flex items-center gap-2 sm:gap-4 text-sm font-medium flex-wrap justify-end">
             <Link to="/track" className="hover:text-accent transition-colors text-xs sm:text-sm whitespace-nowrap">
