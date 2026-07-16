@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import CitizenDashboardLayout from '../layouts/CitizenDashboardLayout';
 import StatisticCard from '../components/StatisticCard';
@@ -14,6 +14,7 @@ import DashboardReportForm from './DashboardReportForm';
 export default function Dashboard() {
   const { userProfile } = useAuth();
   const { reports, stats, loading, error } = useCitizenReports();
+  const navigate = useNavigate();
   const [showReportForm, setShowReportForm] = useState(false);
 
   const getGreeting = () => {
@@ -191,7 +192,11 @@ export default function Dashboard() {
           {!loading && reports.length > 0 && (
             <div className="space-y-3">
               {reports.slice(0, 5).map((report) => (
-                <ReportCard key={report.id} report={report} />
+                <ReportCard
+                  key={report.id}
+                  report={report}
+                  onClick={() => navigate(`/citizen/reports/${report.id}`)}
+                />
               ))}
             </div>
           )}

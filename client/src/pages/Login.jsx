@@ -47,6 +47,16 @@ export default function Login() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-md mx-auto px-4 sm:px-6 py-14">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors mb-4"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to website
+        </button>
         <h1 className="font-display text-3xl font-semibold mb-2">Log in</h1>
         <p className="text-sm text-muted mb-8">
           Welcome back. Log in to view your reports or access the admin dashboard.

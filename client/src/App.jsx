@@ -6,6 +6,9 @@ import TrackReport from "./pages/TrackReport.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import MyReports from "./pages/MyReports.jsx";
+import HowReportsAreReviewed from "./pages/HowReportsAreReviewed.jsx";
+import ConfidenceScoring from "./pages/ConfidenceScoring.jsx";
+import DataPrivacy from "./pages/DataPrivacy.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminRoute from "./components/PrivateRoute.jsx";
@@ -30,6 +33,9 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/my-reports" element={<MyReports />} />
+      <Route path="/how-reports-are-reviewed" element={<HowReportsAreReviewed />} />
+      <Route path="/confidence-scoring" element={<ConfidenceScoring />} />
+      <Route path="/data-privacy" element={<DataPrivacy />} />
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />

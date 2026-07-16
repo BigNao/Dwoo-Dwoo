@@ -34,7 +34,7 @@ export default function NearbyIncidentsMap({ incidents = [], center = [5.6037, -
     }
   }, []);
 
-  const verifiedIncidents = incidents.filter((i) => i.status === 'verified' && i.location);
+  const verifiedIncidents = incidents.filter((i) => i.status === 'verified' && i.latitude != null && i.longitude != null);
 
   return (
     <div className="bg-card dark:bg-asphalt-light rounded-lg border border-border dark:border-white/10 overflow-hidden">
@@ -57,7 +57,7 @@ export default function NearbyIncidentsMap({ incidents = [], center = [5.6037, -
           {verifiedIncidents.map((incident) => (
             <Marker
               key={incident.report_id}
-              position={[incident.location.latitude, incident.location.longitude]}
+              position={[incident.latitude, incident.longitude]}
             >
               <Popup>
                 <div className="text-sm">

@@ -1,45 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import L from "leaflet";
 import { useAuth } from "../../../context/AuthContext.jsx";
 import api from "../../../utils/api.js";
 import { INCIDENT_CATEGORIES } from "../../../utils/constants.js";
-
-// Default Leaflet marker icons don't load correctly under bundlers unless
-// explicitly re-pointed at the CDN assets.
-const markerIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
+import LocationPicker from "../../../components/LocationPicker.jsx";
 
 const STEPS = ["Incident Type", "Description", "Location", "Photo"];
-const GHANA_DEFAULT_CENTER = [7.9465, -1.0232]; // rough geographic centre of Ghana
-
-function DraggableMarker({ position, onChange }) {
-  useMapEvents({
-    click(e) {
-      onChange([e.latlng.lat, e.latlng.lng]);
-    },
-  });
-
-  return (
-    <Marker
-      position={position}
-      draggable
-      icon={markerIcon}
-      eventHandlers={{
-        dragend: (e) => {
-          const { lat, lng } = e.target.getLatLng();
-          onChange([lat, lng]);
-        },
-      }}
-    />
-  );
-}
 
 export default function DashboardReportForm() {
   const navigate = useNavigate();
@@ -52,11 +18,11 @@ export default function DashboardReportForm() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [confirmation, setConfirmation] = useState(null);
 
-  const [submissionType] = useState("registered"); // Always registered for dashboard users
+  const [submissionType] = useState("registered");
   const [incidentType, setIncidentType] = useState("");
   const [description, setDescription] = useState("");
   const [position, setPosition] = useState(null);
-  const [locatingGps, setLocatingGps] = useState(false);
+  const [locationConfirmed, setLocationConfirmed] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
 
@@ -89,38 +55,12 @@ export default function DashboardReportForm() {
       }
     }
 
-    // Step 2 is now Location (was step 3 in original)
     if (currentStep === 2) {
-      if (!position) errors.location = "Confirm a location on the map.";
+      if (!position) errors.location = "Place a pin on the map.";
+      else if (!locationConfirmed) errors.location = "Click 'Confirm Location' to confirm the pin position.";
     }
 
     return errors;
-  }
-
-  function detectGps() {
-    setLocatingGps(true);
-    setFieldErrors((prev) => ({ ...prev, location: undefined }));
-
-    if (!navigator.geolocation) {
-      setFieldErrors((prev) => ({ ...prev, location: "Geolocation isn't supported on this device." }));
-      setLocatingGps(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setPosition([pos.coords.latitude, pos.coords.longitude]);
-        setLocatingGps(false);
-      },
-      () => {
-        setFieldErrors((prev) => ({
-          ...prev,
-          location: "Couldn't detect your location. Tap the map to drop a pin instead.",
-        }));
-        setLocatingGps(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
   }
 
   function handlePhotoChange(e) {
@@ -222,11 +162,13 @@ export default function DashboardReportForm() {
       )}
 
       {step === 2 && (
-        <StepLocation
+        <LocationPicker
           position={position}
-          setPosition={setPosition}
-          detectGps={detectGps}
-          locatingGps={locatingGps}
+          setPosition={(pos) => {
+            setPosition(pos);
+            setLocationConfirmed(false);
+          }}
+          onConfirm={() => setLocationConfirmed(true)}
           error={fieldErrors.location}
         />
       )}
@@ -327,47 +269,7 @@ function StepDescription({ description, setDescription, error }) {
   );
 }
 
-function StepLocation({ position, setPosition, detectGps, locatingGps, error }) {
-  const center = position || GHANA_DEFAULT_CENTER;
 
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-medium text-ink dark:text-white">Incident location</label>
-        <button
-          type="button"
-          onClick={detectGps}
-          disabled={locatingGps}
-          className="text-xs font-mono uppercase tracking-wide px-3 py-1.5 rounded-sign border border-border dark:border-white/20 hover:bg-primary dark:hover:bg-accent hover:text-white dark:hover:text-ink transition-colors disabled:opacity-50 text-muted dark:text-white/60"
-        >
-          {locatingGps ? "Locating…" : "Use My Location"}
-        </button>
-      </div>
-
-      <div className="h-56 sm:h-72 w-full rounded-sign overflow-hidden border border-border dark:border-white/10">
-        <MapContainer center={center} zoom={position ? 15 : 7} style={{ height: "100%", width: "100%" }}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {position && <DraggableMarker position={position} onChange={setPosition} />}
-        </MapContainer>
-      </div>
-
-      <p className="mt-2 text-xs text-muted/80 dark:text-white/40">
-        Tap the map or drag the pin to fine-tune the exact spot.
-      </p>
-
-      {position && (
-        <p className="mt-2 font-mono text-xs text-muted dark:text-white/60">
-          {position[0].toFixed(5)}, {position[1].toFixed(5)}
-        </p>
-      )}
-
-      {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
-    </div>
-  );
-}
 
 function StepPhoto({ photoPreview, onChange, onRemove, fileInputRef, error }) {
   return (
