@@ -57,7 +57,7 @@ export default function ReportForm() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [confirmation, setConfirmation] = useState(null);
 
-  const [submissionType, setSubmissionType] = useState(currentUser ? "registered" : "");
+  const [submissionType, setSubmissionType] = useState("");
   const [incidentType, setIncidentType] = useState("");
   const [description, setDescription] = useState("");
   const [position, setPosition] = useState(null);
@@ -120,12 +120,11 @@ export default function ReportForm() {
   }
 
   function handleSelectRegistered() {
-    if (!currentUser) {
-      navigate("/login", { state: { from: "/report" } });
+    if (currentUser) {
+      navigate("/citizen/new-report");
       return;
     }
-    setSubmissionType("registered");
-    setFieldErrors({});
+    navigate("/login", { state: { from: "/citizen/new-report" } });
   }
 
   function detectGps() {

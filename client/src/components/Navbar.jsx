@@ -4,7 +4,7 @@ import ConfirmModal from "./ConfirmModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
-  const { currentUser, isAdmin, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [showBackLogoutModal, setShowBackLogoutModal] = useState(false);
@@ -55,7 +55,14 @@ export default function Navbar() {
     <>
       <div className="bg-primary text-white/70 text-xs font-mono">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-8 flex items-center gap-2 overflow-hidden">
-          <span aria-hidden="true" className="shrink-0">🇬🇭</span>
+          <span aria-hidden="true" className="shrink-0">
+            <svg className="h-4 w-5 inline-block" viewBox="0 0 20 14" xmlns="http://www.w3.org/2000/svg">
+              <rect width="20" height="4.67" fill="#CE1126" />
+              <rect y="4.67" width="20" height="4.66" fill="#FCD116" />
+              <rect y="9.33" width="20" height="4.67" fill="#006B3F" />
+              <polygon points="10,4.5 11.2,7 14,7 11.8,8.8 12.5,11.5 10,9.8 7.5,11.5 8.2,8.8 6,7 8.8,7" fill="#000" />
+            </svg>
+          </span>
           <span className="truncate">An official road-safety reporting service for Ghana.</span>
         </div>
       </div>
@@ -65,9 +72,7 @@ export default function Navbar() {
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between text-white">
           <Link to="/" className="flex items-center gap-2 font-display font-semibold text-lg">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-sign bg-accent text-ink font-bold">
-              K
-            </span>
+            <img src="/assets/k-logo.png" alt="KwansoDwoo" className="h-8 w-8 object-contain" />
             KwansoDwoo
           </Link>
 
@@ -75,13 +80,6 @@ export default function Navbar() {
             <Link to="/track" className="hover:text-accent transition-colors text-xs sm:text-sm whitespace-nowrap">
               Track
             </Link>
-
-            {currentUser && !isAdmin ? (
-              <Link to="/my-reports" className="hover:text-accent transition-colors text-xs sm:text-sm whitespace-nowrap">
-                My Reports
-              </Link>
-            ) : null}
-
             <Link to="/login" className="hover:text-accent transition-colors text-xs sm:text-sm">
               Log in
             </Link>
