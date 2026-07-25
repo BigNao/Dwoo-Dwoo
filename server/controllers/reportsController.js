@@ -1,6 +1,6 @@
 const { db, admin } = require("../config/firebaseAdmin");
 const { calculateConfidenceScore, deriveInitialStatus } = require("../utils/confidence");
-const { uploadImage } = require("../utils/cloudinary");
+const { uploadImage, uploadVideo } = require("../utils/cloudinary");
 const {
   generateReferenceNumber,
   generateReportId,
@@ -101,12 +101,13 @@ async function createReport(req, res) {
     if (photo_data) {
       try {
         const buffer = Buffer.from(photo_data, 'base64');
-        photoUrl = await uploadImage(buffer, photo_name);
+        const isVideo = /\.(mp4|webm|mov)$/i.test(photo_name);
+        photoUrl = isVideo ? await uploadVideo(buffer, photo_name) : await uploadImage(buffer, photo_name);
       } catch (uploadError) {
-        console.error('Image upload failed:', uploadError);
+        console.error('Media upload failed:', uploadError);
         return res.status(500).json({
           error: "UploadError",
-          message: "Failed to upload image. Please try again."
+          message: "Failed to upload media. Please try again."
         });
       }
     }

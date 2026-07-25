@@ -39,4 +39,27 @@ async function uploadImage(fileBuffer, fileName) {
   });
 }
 
-module.exports = { uploadImage };
+async function uploadVideo(fileBuffer, fileName) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'reports',
+        resource_type: 'video',
+        allowed_formats: ['mp4', 'webm', 'mov'],
+        public_id: `${Date.now()}_${fileName.replace(/\.[^/.]+$/, '')}`
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          reject(new Error('Failed to upload video'));
+        } else {
+          resolve(result.secure_url);
+        }
+      }
+    );
+
+    uploadStream.end(fileBuffer);
+  });
+}
+
+module.exports = { uploadImage, uploadVideo };

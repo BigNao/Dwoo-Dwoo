@@ -322,6 +322,12 @@ function StepDescription({ description, setDescription, error }) {
 
 
 
+function formatTime(seconds) {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+
 function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, error }) {
   const isVideo = photoFile?.type?.startsWith("video/");
   const cameraInputRef = useRef(null);
@@ -334,22 +340,32 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
   const [cameraError, setCameraError] = useState(null);
   const [cameraMode, setCameraMode] = useState("photo");
   const [recording, setRecording] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const [facingMode, setFacingMode] = useState("environment");
+
+  useEffect(() => {
+    if (!recording) { setElapsed(0); return; }
+    const interval = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, [recording]);
 
   useEffect(() => {
     if (!showCamera) return;
     let active = true;
     (async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: true });
+        if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: true });
         if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
         setCameraStream(stream);
         if (videoRef.current) videoRef.current.srcObject = stream;
+        setCameraError(null);
       } catch (err) {
         if (active) setCameraError("Could not access camera. Please allow camera permission or use Browse Files instead.");
       }
     })();
     return () => { active = false; };
-  }, [showCamera]);
+  }, [showCamera, facingMode]);
 
   useEffect(() => {
     if (!cameraStream || !videoRef.current) return;
@@ -437,17 +453,17 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
       {showCamera ? (
         <div className="space-y-3">
           <div className="relative rounded-sign overflow-hidden bg-black">
-            <video ref={videoRef} autoPlay playsInline className="w-full h-64 object-cover" />
+            <video ref={videoRef} autoPlay playsInline muted={cameraMode === "video"} className="w-full h-64 object-cover" />
             <canvas ref={canvasRef} className="hidden" />
             {recording && (
               <span className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-red-600 px-2.5 py-1 text-xs font-semibold text-white">
                 <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                REC
+                {formatTime(elapsed)}
               </span>
             )}
           </div>
           {cameraError && <p className="text-sm text-danger font-medium">{cameraError}</p>}
-          <div className="flex justify-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <button
               type="button"
               onClick={() => setCameraMode("photo")}
@@ -461,6 +477,16 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${cameraMode === "video" ? "bg-primary dark:bg-accent text-white dark:text-ink" : "bg-muted/20 text-ink dark:text-white hover:bg-muted/40"}`}
             >
               Video
+            </button>
+            <button
+              type="button"
+              onClick={() => setFacingMode((m) => (m === "environment" ? "user" : "environment"))}
+              className="p-2 rounded-full hover:bg-muted/20 dark:hover:bg-white/10 transition-colors"
+              title="Switch camera"
+            >
+              <svg className="h-5 w-5 text-ink dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+              </svg>
             </button>
           </div>
           <div className="flex gap-3">
