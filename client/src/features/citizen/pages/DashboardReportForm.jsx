@@ -355,7 +355,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
     (async () => {
       try {
         if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: cameraMode === "video" });
         if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
         setCameraStream(stream);
         if (videoRef.current) videoRef.current.srcObject = stream;
@@ -365,7 +365,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
       }
     })();
     return () => { active = false; };
-  }, [showCamera, facingMode]);
+  }, [showCamera, facingMode, cameraMode]);
 
   useEffect(() => {
     if (!cameraStream || !videoRef.current) return;

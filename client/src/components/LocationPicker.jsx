@@ -320,13 +320,22 @@ export default function LocationPicker({ position, setPosition, error, onConfirm
             </div>
           )}
           <p className="text-xs text-muted dark:text-white/40">Drag the pin to fine-tune the exact spot.</p>
-          <button
-            type="button"
-            onClick={handleConfirmClick}
-            className="w-full px-4 py-2.5 rounded-lg bg-primary dark:bg-accent text-white dark:text-ink text-sm font-semibold hover:bg-primary-hover dark:hover:bg-accent-dark transition-colors"
-          >
-            Confirm Location
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleConfirmClick}
+              className="flex-1 px-4 py-2.5 rounded-lg bg-primary dark:bg-accent text-white dark:text-ink text-sm font-semibold hover:bg-primary-hover dark:hover:bg-accent-dark transition-colors"
+            >
+              Confirm Location
+            </button>
+            <button
+              type="button"
+              onClick={() => setPosition(null)}
+              className="px-4 py-2.5 rounded-lg border border-border dark:border-white/20 text-sm font-medium text-ink dark:text-white hover:bg-muted/20 dark:hover:bg-white/5 transition-colors"
+            >
+              Remove Pin
+            </button>
+          </div>
         </div>
       )}
 
