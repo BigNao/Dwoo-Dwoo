@@ -3,19 +3,9 @@ import { Link } from "react-router-dom";
 
 const INFO_ROWS = [
   <>
-    This form is used to report federal crimes and submit tips regarding terrorist activity. If you
-    are reporting cyber-enabled crime, please submit a tip to{" "}
-    <a
-      href="https://www.ic3.gov"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-primary hover:underline transition-colors"
-    >
-      IC3.gov
-    </a>
-    .
+    This form is used to report road safety issues as well as crimes that occur on the road.
   </>,
-  "Be specific when providing information. Example: If reporting online criminal activity, please provide details such as the website's URL or internet address, the application's name (e.g., Snapchat, Facebook, X, etc.), username of the individual you are reporting or the username of the profile which contains the comment you are reporting, and the date/time of post.",
+  "Be specific when providing information. Example: If reporting criminal activity, please provide clear details in the space provided.",
   "Submit your information only once.",
 ];
 
@@ -72,7 +62,7 @@ function InfoPill({ children }) {
   return (
     <div className="flex items-center gap-3 rounded-full border border-offwhite-recessed/80 border-b-offwhite-recessed bg-offwhite-surface px-3 py-2 shadow-[0_3px_8px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.85)]">
       <SphereGraphic />
-      <p className="text-[14px] leading-relaxed tracking-normal text-ink overflow-x-auto whitespace-nowrap sm:overflow-visible sm:whitespace-normal">
+      <p className="text-base leading-relaxed tracking-normal text-ink overflow-x-auto whitespace-nowrap sm:overflow-visible sm:whitespace-normal">
         {children}
       </p>
     </div>
@@ -89,7 +79,7 @@ export default function ElectronicTipForm() {
         >
           <WarningIcon />
           <p>
-            If this is an emergency, contact emergency services. Do not submit this form.
+            Use this form to report any form of road safety issues!.
           </p>
         </div>
 

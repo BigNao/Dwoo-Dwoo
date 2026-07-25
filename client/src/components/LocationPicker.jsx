@@ -95,9 +95,8 @@ export default function LocationPicker({ position, setPosition, error, onConfirm
   const [distanceWarn, setDistanceWarn] = useState(null);
   const [outsideWarn, setOutsideWarn] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [useMyLocationLoading, setUseMyLocationLoading] = useState(false);
   const zoomTimer = useRef(null);
-
-  useEffect(() => { gps.detectOnce(); }, []);
 
   const handlePlace = useCallback(
     (coords) => {
@@ -110,6 +109,24 @@ export default function LocationPicker({ position, setPosition, error, onConfirm
     },
     [setPosition, reverseGeocode]
   );
+
+  useEffect(() => {
+    if (useMyLocationLoading && gps.position && !gps.locating) {
+      setUseMyLocationLoading(false);
+      handlePlace(gps.position);
+    }
+  }, [gps.position, gps.locating, useMyLocationLoading, handlePlace]);
+
+  const handleUseMyLocation = useCallback(() => {
+    setUseMyLocationLoading(true);
+    gps.detectGps();
+    if (gps.position) {
+      setUseMyLocationLoading(false);
+      handlePlace(gps.position);
+    }
+  }, [gps, handlePlace]);
+
+  useEffect(() => { gps.detectOnce(); }, []);
 
   const handleZoomTooLow = useCallback(() => {
     setZoomTooLow(true);
@@ -239,6 +256,32 @@ export default function LocationPicker({ position, setPosition, error, onConfirm
       </div>
 
       <div className="relative h-56 sm:h-72 w-full rounded-lg overflow-hidden border border-border dark:border-white/10">
+        {!position && (
+          <button
+            type="button"
+            onClick={handleUseMyLocation}
+            disabled={useMyLocationLoading}
+            className="absolute left-1/2 top-3 z-[1000] -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink shadow-lg transition-colors hover:bg-gray-100 disabled:opacity-60"
+          >
+            {useMyLocationLoading ? (
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                Locating…
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2v4m0 12v4m10-10h-4M6 12H2" strokeLinecap="round" />
+                </svg>
+                Use my Location
+              </span>
+            )}
+          </button>
+        )}
         <MapContainer
           center={position || gps.position || GHANA_DEFAULT_CENTER}
           zoom={position ? 16 : gps.position ? 15 : 7}

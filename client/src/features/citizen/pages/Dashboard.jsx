@@ -221,7 +221,7 @@ export default function Dashboard() {
                 </svg>
                 Cancel
               </button>
-              <DashboardReportForm />
+              <DashboardReportForm onClose={() => setShowReportForm(false)} />
             </div>
           </div>
         </div>
