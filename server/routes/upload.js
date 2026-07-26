@@ -99,6 +99,13 @@ router.post(
 
       logFileDiagnostics("uploadImage", req.file);
 
+      if (req.file.buffer.length < 256) {
+        return res.status(400).json({
+          error: "ValidationError",
+          message: "File appears to be empty or corrupted.",
+        });
+      }
+
       const url = await uploadImage(req.file.buffer, req.file.originalname);
 
       return res.status(200).json({ url });
@@ -129,6 +136,14 @@ router.post(
       }
 
       logFileDiagnostics("uploadVideo", req.file);
+
+      if (req.file.buffer.length < 1024) {
+        return res.status(400).json({
+          error: "ValidationError",
+          message:
+            "The video appears to be empty or too short. Please record for at least 2 seconds or select a different video.",
+        });
+      }
 
       const url = await uploadVideo(req.file.buffer, req.file.originalname);
 

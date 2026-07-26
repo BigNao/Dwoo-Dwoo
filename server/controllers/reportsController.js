@@ -103,6 +103,12 @@ async function createReport(req, res) {
     if (!photoUrl && photo_data) {
       try {
         const buffer = Buffer.from(photo_data, "base64");
+        if (buffer.length < 256) {
+          return res.status(400).json({
+            error: "ValidationError",
+            message: "The file appears to be empty or corrupted.",
+          });
+        }
         const isVideo = /\.(mp4|webm|mov|3gp|m4v|avi)$/i.test(photo_name || "");
         photoUrl = isVideo
           ? await uploadVideo(buffer, photo_name)

@@ -108,6 +108,22 @@ export default function DashboardReportForm({ onClose }) {
       return;
     }
 
+    if (file.type.startsWith("video/") && file.size < 1024) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        photo: "The video appears to be empty or too short. Please record for at least 2 seconds or select a different video.",
+      }));
+      return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        photo: "File is too large. Maximum size is 100 MB.",
+      }));
+      return;
+    }
+
     setFieldErrors((prev) => ({ ...prev, photo: undefined }));
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
