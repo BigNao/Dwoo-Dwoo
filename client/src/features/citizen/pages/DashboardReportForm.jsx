@@ -102,9 +102,9 @@ export default function DashboardReportForm({ onClose }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "video/mp4", "video/webm", "video/quicktime"];
+    const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "video/"];
     if (!ACCEPTED_TYPES.some((t) => file.type.startsWith(t))) {
-      setFieldErrors((prev) => ({ ...prev, photo: "Only JPG, PNG, WEBP images or MP4/WEBM/MOV videos are allowed." }));
+      setFieldErrors((prev) => ({ ...prev, photo: "Only JPG, PNG, WEBP images or MP4/WEBM/MOV/3GP videos are allowed." }));
       return;
     }
 
@@ -132,9 +132,8 @@ export default function DashboardReportForm({ onClose }) {
 
         const endpoint = photoFile.type.startsWith("video/") ? "/upload/video" : "/upload/image";
         const uploadResponse = await api.post(endpoint, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 120000,
         });
 
         photoUrl = uploadResponse.data.url;
@@ -566,7 +565,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
           <input
             ref={cameraInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/3gpp,video/x-m4v"
             capture="environment"
             onChange={onChange}
             className="hidden"
@@ -574,7 +573,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/3gpp,video/x-m4v"
             onChange={onChange}
             className="hidden"
           />

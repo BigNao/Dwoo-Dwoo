@@ -60,6 +60,7 @@ async function createReport(req, res) {
       longitude,
       photo_data,
       photo_name,
+      photo_url,
       user_id,
     } = req.body;
 
@@ -96,18 +97,21 @@ async function createReport(req, res) {
       return res.status(400).json({ error: "ValidationError", fields: errors });
     }
 
-    // --- Image upload to Cloudinary ---
-    let photoUrl = null;
-    if (photo_data) {
+    // --- Media URL (already uploaded via /api/upload/*, or via base64) ---
+    let photoUrl = photo_url || null;
+
+    if (!photoUrl && photo_data) {
       try {
-        const buffer = Buffer.from(photo_data, 'base64');
-        const isVideo = /\.(mp4|webm|mov)$/i.test(photo_name);
-        photoUrl = isVideo ? await uploadVideo(buffer, photo_name) : await uploadImage(buffer, photo_name);
+        const buffer = Buffer.from(photo_data, "base64");
+        const isVideo = /\.(mp4|webm|mov|3gp|m4v|avi)$/i.test(photo_name || "");
+        photoUrl = isVideo
+          ? await uploadVideo(buffer, photo_name)
+          : await uploadImage(buffer, photo_name);
       } catch (uploadError) {
-        console.error('Media upload failed:', uploadError);
+        console.error("Media upload from base64 failed:", uploadError);
         return res.status(500).json({
           error: "UploadError",
-          message: "Failed to upload media. Please try again."
+          message: "Failed to upload media. Please try again.",
         });
       }
     }

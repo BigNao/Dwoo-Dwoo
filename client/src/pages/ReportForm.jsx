@@ -134,9 +134,9 @@ export default function ReportForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "video/mp4", "video/webm", "video/quicktime"];
+    const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "video/"];
     if (!ACCEPTED_TYPES.some((t) => file.type.startsWith(t))) {
-      setFieldErrors((prev) => ({ ...prev, photo: "Only JPG, PNG, WEBP images or MP4/WEBM/MOV videos are allowed." }));
+      setFieldErrors((prev) => ({ ...prev, photo: "Only JPG, PNG, WEBP images or MP4/WEBM/MOV/3GP videos are allowed." }));
       return;
     }
 
@@ -156,12 +156,19 @@ export default function ReportForm() {
     setSubmitting(true);
 
     try {
-      let photoData = null;
-      let photoName = null;
+      let photoUrl = null;
 
       if (photoFile) {
-        photoData = await fileToBase64(photoFile);
-        photoName = photoFile.name;
+        const formData = new FormData();
+        formData.append("file", photoFile);
+
+        const endpoint = photoFile.type.startsWith("video/") ? "/upload/video" : "/upload/image";
+        const uploadResponse = await api.post(endpoint, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 120000,
+        });
+
+        photoUrl = uploadResponse.data.url;
       }
 
       const payload = {
@@ -170,8 +177,7 @@ export default function ReportForm() {
         description: description.trim(),
         latitude: position[0],
         longitude: position[1],
-        photo_data: photoData,
-        photo_name: photoName,
+        photo_url: photoUrl,
         user_id: submissionType === "registered" ? currentUser?.uid : null,
       };
 
@@ -179,24 +185,19 @@ export default function ReportForm() {
       setConfirmation(data);
     } catch (err) {
       console.error("Report submission failed:", err);
-      setSubmitError(
-        err.response?.data?.message || "Something went wrong submitting your report. Please try again."
-      );
+      const serverMsg = err.response?.data?.message;
+      if (serverMsg) {
+        setSubmitError(serverMsg);
+      } else if (err.code === "ECONNABORTED") {
+        setSubmitError("Upload timed out. The file may be too large. Please try a smaller video.");
+      } else if (!err.response) {
+        setSubmitError("Network error. Please check your connection and try again.");
+      } else {
+        setSubmitError("Something went wrong submitting your report. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
-  }
-
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result.split(',')[1];
-        resolve(base64String);
-      };
-      reader.onerror = (error) => reject(error);
-    });
   }
 
   if (confirmation) {
@@ -643,7 +644,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
           <input
             ref={cameraInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/3gpp,video/x-m4v"
             capture="environment"
             onChange={onChange}
             className="hidden"
@@ -651,7 +652,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/3gpp,video/x-m4v"
             onChange={onChange}
             className="hidden"
           />
