@@ -19,23 +19,11 @@ const imageUpload = multer({
   },
 });
 
-const VIDEO_MIMES = [
-  "video/mp4",
-  "video/webm",
-  "video/quicktime",
-  "video/3gpp",
-  "video/3gpp2",
-  "video/x-m4v",
-  "video/x-msvideo",
-  "video/x-ms-wmv",
-  "video/ogg",
-];
-
 const videoUpload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    if (VIDEO_MIMES.includes(file.mimetype)) {
+    if (file.mimetype.startsWith("video/")) {
       cb(null, true);
     } else {
       cb(
