@@ -37,7 +37,7 @@ export default function Login() {
       navigate(redirectTo, { replace: true });
       return;
     } catch (err) {
-      setFormError(mapFirebaseError(err.code));
+      setFormError(err.message || mapFirebaseError(err.code));
     } finally {
       setSubmitting(false);
     }

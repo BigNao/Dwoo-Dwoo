@@ -22,12 +22,20 @@ export function AuthProvider({ children }) {
 
       if (user) {
         try {
-          // Ensure the auth token is attached before Firestore security rules run.
           await user.getIdToken();
           const snap = await getDoc(doc(db, "users", user.uid));
-          setUserProfile(snap.exists() ? snap.data() : null);
+          if (snap.exists()) {
+            setUserProfile(snap.data());
+          } else {
+            console.warn(
+              "No Firestore user document found for uid=" + user.uid +
+              ". The user exists in Firebase Auth but has no profile document. " +
+              "If registration timed out earlier, use a different email or re-register."
+            );
+            setUserProfile(null);
+          }
         } catch (err) {
-          console.error("Failed to load user profile:", err);
+          console.error("Failed to load user profile from Firestore:", err.code, err.message);
           setUserProfile(null);
         }
       } else {
@@ -62,8 +70,28 @@ export function AuthProvider({ children }) {
   async function login({ email, password }) {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     await credential.user.getIdToken();
-    const snap = await getDoc(doc(db, "users", credential.user.uid));
-    const profile = snap.exists() ? snap.data() : null;
+
+    let profile = null;
+    try {
+      const snap = await getDoc(doc(db, "users", credential.user.uid));
+      profile = snap.exists() ? snap.data() : null;
+    } catch (err) {
+      console.error("Failed to read user profile on login:", err.code, err.message);
+      await signOut(auth);
+      setCurrentUser(null);
+      setUserProfile(null);
+      throw new Error("Account setup incomplete. Please contact support or try a different email.");
+    }
+
+    if (!profile) {
+      await signOut(auth);
+      setCurrentUser(null);
+      setUserProfile(null);
+      throw new Error(
+        "Your account was created but the profile setup failed. " +
+        "This can happen if registration timed out. Please try a different email or contact support."
+      );
+    }
 
     if (profile?.role === "admin") {
       setCurrentUser(credential.user);

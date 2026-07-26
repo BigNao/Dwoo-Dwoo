@@ -343,6 +343,21 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
+const RECORDING_MIME_TYPES = [
+  "video/mp4;codecs=h264,aac",
+  "video/mp4",
+  "video/webm;codecs=vp9,opus",
+  "video/webm;codecs=vp8,opus",
+  "video/webm",
+  "video/3gpp",
+  "video/quicktime",
+  "video/x-m4v",
+];
+
+function getSupportedMimeType() {
+  return RECORDING_MIME_TYPES.find((t) => MediaRecorder.isTypeSupported(t)) || null;
+}
+
 function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, error }) {
   const isVideo = photoFile?.type?.startsWith("video/");
   const cameraInputRef = useRef(null);
@@ -350,6 +365,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
   const canvasRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
+  const recordingStartRef = useRef(0);
   const [showCamera, setShowCamera] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [cameraError, setCameraError] = useState(null);
@@ -387,14 +403,6 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
     videoRef.current.srcObject = cameraStream;
   }, [cameraStream]);
 
-  useEffect(() => {
-    if (!showCamera) {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        mediaRecorderRef.current.stop();
-      }
-    }
-  }, [showCamera]);
-
   function stopCamera() {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
@@ -426,37 +434,60 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
     recordedChunksRef.current = [];
     const stream = cameraStream;
     if (!stream) return;
-    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-      ? "video/webm;codecs=vp9"
-      : MediaRecorder.isTypeSupported("video/webm")
-        ? "video/webm"
-        : "video/mp4";
+
+    const mimeType = getSupportedMimeType();
+    if (!mimeType) {
+      setCameraError("Video recording is not supported on this device. Please use Browse Files to select a video.");
+      return;
+    }
+
     try {
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
+      recordingStartRef.current = Date.now();
+
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
+
       recorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType });
+        const chunks = recordedChunksRef.current;
+        recordedChunksRef.current = [];
+        const totalSize = chunks.reduce((s, c) => s + c.size, 0);
+
+        console.log("[camera] Recording stopped:", {
+          mimeType: recorder.mimeType,
+          chunkCount: chunks.length,
+          totalSize,
+          durationSec: ((Date.now() - recordingStartRef.current) / 1000).toFixed(1),
+        });
+
+        if (totalSize < 1024) {
+          setCameraError(
+            "Recording produced no video data (only " + totalSize + " bytes). " +
+            "Try recording for at least 2 seconds or use Browse Files to select a video."
+          );
+          stopCamera();
+          return;
+        }
+
+        const blob = new Blob(chunks, { type: recorder.mimeType });
         const ext = recorder.mimeType.includes("mp4") ? "mp4" : "webm";
         const file = new File([blob], `camera_${Date.now()}.${ext}`, { type: recorder.mimeType });
-        recordedChunksRef.current = [];
         stopCamera();
         onChange({ target: { files: [file] } });
       };
+
       recorder.start(1000);
       setRecording(true);
     } catch {
-      setCameraError("Video recording is not supported on this device.");
+      setCameraError("Video recording is not supported on this device. Please use Browse Files instead.");
     }
   }
 
   function stopRecording() {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-      mediaRecorderRef.current.stop();
-      setRecording(false);
-    }
+    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === "inactive") return;
+    mediaRecorderRef.current.stop();
   }
 
   return (
