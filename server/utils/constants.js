@@ -6,6 +6,7 @@ const INCIDENT_CATEGORIES = [
   "Reckless or Dangerous Driving",
   "Abandoned Vehicle",
   "Poor Road Condition",
+  "Other",
 ];
 
 const REPORT_STATUSES = [

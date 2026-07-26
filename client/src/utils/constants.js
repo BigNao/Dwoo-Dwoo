@@ -6,6 +6,7 @@ export const INCIDENT_CATEGORIES = [
   "Reckless or Dangerous Driving",
   "Abandoned Vehicle",
   "Poor Road Condition",
+  "Other",
 ];
 
 export const REPORT_STATUSES = [
@@ -46,6 +47,7 @@ export const INCIDENT_MARKER_COLORS = {
   "Reckless or Dangerous Driving": "#1D4ED8",
   "Abandoned Vehicle": "#475569",
   "Poor Road Condition": "#059669",
+  "Other": "#6B7280",
 };
 
 export function confidenceColor(score) {

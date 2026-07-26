@@ -84,11 +84,19 @@ export default function ReportDetails() {
           </div>
 
           {report.photo_url && (
-            <img
-              src={report.photo_url}
-              alt="Reported incident"
-              className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4"
-            />
+            /\.(mp4|webm|mov|3gp|m4v|avi)$/i.test(report.photo_url) ? (
+              <video
+                src={report.photo_url}
+                controls
+                className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4"
+              />
+            ) : (
+              <img
+                src={report.photo_url}
+                alt="Reported incident"
+                className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4"
+              />
+            )
           )}
 
           <div className="space-y-4">

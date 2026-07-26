@@ -100,10 +100,9 @@ export default function Dashboard() {
                     />
                   </Link>
                 ) : (
-                  <button
-                    type="button"
+                  <div
                     onClick={action.onClick}
-                    className="w-full text-left"
+                    className="cursor-pointer"
                   >
                     <QuickActionCard
                       icon={action.icon}
@@ -111,7 +110,7 @@ export default function Dashboard() {
                       description={action.description}
                       accent={index === 0}
                     />
-                  </button>
+                  </div>
                 )}
               </div>
             ))}

@@ -95,12 +95,20 @@ export default function ReportManagementPanel({ report, onClose, onUpdated }) {
           {report.photo_url && (
             <div>
               <p className="text-xs font-mono uppercase tracking-wide text-muted/80 mb-2">Photo</p>
-              <img
-                src={report.photo_url}
-                alt="Reported incident"
-                onClick={() => setPhotoExpanded(true)}
-                className="w-full h-40 object-cover rounded-sign cursor-zoom-in"
-              />
+              {/\.(mp4|webm|mov|3gp|m4v|avi)$/i.test(report.photo_url) ? (
+                <video
+                  src={report.photo_url}
+                  controls
+                  className="w-full h-40 object-cover rounded-sign"
+                />
+              ) : (
+                <img
+                  src={report.photo_url}
+                  alt="Reported incident"
+                  onClick={() => setPhotoExpanded(true)}
+                  className="w-full h-40 object-cover rounded-sign cursor-zoom-in"
+                />
+              )}
             </div>
           )}
 
@@ -184,7 +192,11 @@ export default function ReportManagementPanel({ report, onClose, onUpdated }) {
           className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-6"
           onClick={() => setPhotoExpanded(false)}
         >
-          <img src={report.photo_url} alt="Reported incident, full size" className="max-h-full max-w-full rounded-sign" />
+          {/\.(mp4|webm|mov|3gp|m4v|avi)$/i.test(report.photo_url) ? (
+            <video src={report.photo_url} controls className="max-h-full max-w-full rounded-sign" />
+          ) : (
+            <img src={report.photo_url} alt="Reported incident, full size" className="max-h-full max-w-full rounded-sign" />
+          )}
         </div>
       )}
     </div>

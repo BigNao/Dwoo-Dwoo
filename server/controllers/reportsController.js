@@ -40,6 +40,7 @@ async function findCorroboratingReports({ incident_type, latitude, longitude }) 
     const data = doc.data();
     if (data.incident_type !== incident_type) return;
     if (typeof data.latitude !== "number" || typeof data.longitude !== "number") return;
+    if (latitude == null || longitude == null) return;
 
     const km = distanceInKm(latitude, longitude, data.latitude, data.longitude);
     if (km <= CORROBORATION_RADIUS_KM) {
@@ -66,23 +67,29 @@ async function createReport(req, res) {
 
     // --- Validation ---
     const errors = {};
+    let lat = null;
+    let lng = null;
 
     if (!["anonymous", "registered"].includes(submission_type)) {
       errors.submission_type = "submission_type must be 'anonymous' or 'registered'.";
     }
 
     if (!INCIDENT_CATEGORIES.includes(incident_type)) {
-      errors.incident_type = "incident_type must be one of the 7 supported categories.";
+      errors.incident_type = "incident_type must be one of the supported categories.";
     }
 
-    if (typeof description !== "string" || description.trim().length < 20) {
-      errors.description = "description must be at least 20 characters long.";
+    if (incident_type === "Other") {
+      if (typeof description !== "string" || !description.trim()) {
+        errors.description = "description is required when incident type is 'Other'.";
+      }
     }
 
-    const lat = Number(latitude);
-    const lng = Number(longitude);
-    if (Number.isNaN(lat) || Number.isNaN(lng)) {
-      errors.location = "Valid latitude and longitude are required.";
+    if (latitude != null && longitude != null) {
+      lat = Number(latitude);
+      lng = Number(longitude);
+      if (Number.isNaN(lat) || Number.isNaN(lng)) {
+        errors.location = "Valid latitude and longitude are required.";
+      }
     }
 
     if (submission_type === "registered" && !user_id) {

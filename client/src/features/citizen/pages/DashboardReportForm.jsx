@@ -27,7 +27,6 @@ function clearDraft() {
 export default function DashboardReportForm({ onClose }) {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const fileInputRef = useRef(null);
   const draft = useRef(loadDraft());
 
   const [step, setStep] = useState(draft.current?.step ?? 0);
@@ -85,14 +84,13 @@ export default function DashboardReportForm({ onClose }) {
 
     // Step 1 is now Description (was step 2 in original)
     if (currentStep === 1) {
-      if (description.trim().length < 20) {
-        errors.description = "Description must be at least 20 characters.";
+      if (incidentType === "Other" && !description.trim()) {
+        errors.description = "Description is required when you select 'Other'.";
       }
     }
 
     if (currentStep === 2) {
-      if (!position) errors.location = "Place a pin on the map.";
-      else if (!locationConfirmed) errors.location = "Click 'Confirm Location' to confirm the pin position.";
+      // Location is optional — no validation
     }
 
     return errors;
@@ -132,7 +130,6 @@ export default function DashboardReportForm({ onClose }) {
   function removePhoto() {
     setPhotoFile(null);
     setPhotoPreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   async function handleSubmit() {
@@ -159,18 +156,22 @@ export default function DashboardReportForm({ onClose }) {
         submission_type: submissionType,
         incident_type: incidentType,
         description: description.trim(),
-        latitude: position[0],
-        longitude: position[1],
         photo_url: photoUrl,
         user_id: submissionType === "registered" ? currentUser?.uid : null,
       };
+      if (position) {
+        payload.latitude = position[0];
+        payload.longitude = position[1];
+      }
 
+      console.log("Submitting payload:", payload);
       const { data } = await api.post("/reports", payload);
       setConfirmation(data);
     } catch (err) {
       console.error("Report submission failed:", err);
+      console.error("Server response data:", err.response?.data);
       setSubmitError(
-        err.response?.data?.message || "Something went wrong submitting your report. Please try again."
+        err.response?.data?.message || JSON.stringify(err.response?.data) || "Something went wrong submitting your report. Please try again."
       );
     } finally {
       setSubmitting(false);
@@ -238,16 +239,15 @@ export default function DashboardReportForm({ onClose }) {
         />
       )}
 
-      {step === 3 && (
-        <StepPhoto
-          photoPreview={photoPreview}
-          photoFile={photoFile}
-          onChange={handlePhotoChange}
-          onRemove={removePhoto}
-          fileInputRef={fileInputRef}
-          error={fieldErrors.photo}
-        />
-      )}
+        {step === 3 && (
+          <StepPhoto
+            photoPreview={photoPreview}
+            photoFile={photoFile}
+            onChange={handlePhotoChange}
+            onRemove={removePhoto}
+            error={fieldErrors.photo}
+          />
+        )}
 
       {submitError && (
         <p className="mt-6 text-sm text-danger font-medium" role="alert">
@@ -326,10 +326,6 @@ function StepDescription({ description, setDescription, error }) {
         placeholder="Describe the incident: what you saw, when, and anything else responders should know…"
         className="w-full rounded-sign border border-border dark:border-white/10 px-4 py-3 bg-card dark:bg-asphalt-light text-ink dark:text-white focus:border-primary dark:focus:border-accent resize-none"
       />
-      <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-muted/80 dark:text-white/40">Minimum 20 characters.</p>
-        <p className="text-xs font-mono text-muted/80 dark:text-white/40">{description.trim().length} chars</p>
-      </div>
       {error && <p className="mt-2 text-sm text-danger font-medium">{error}</p>}
     </div>
   );
@@ -358,7 +354,7 @@ function getSupportedMimeType() {
   return RECORDING_MIME_TYPES.find((t) => MediaRecorder.isTypeSupported(t)) || null;
 }
 
-function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, error }) {
+function StepPhoto({ photoPreview, photoFile, onChange, onRemove, error }) {
   const isVideo = photoFile?.type?.startsWith("video/");
   const cameraInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -585,7 +581,7 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
           </div>
         </div>
       ) : !photoPreview ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={() => {
@@ -595,24 +591,13 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
                 cameraInputRef.current?.click();
               }
             }}
-            className="flex flex-col items-center justify-center gap-2 h-32 rounded-sign border-2 border-dashed border-border dark:border-white/20 hover:border-primary dark:hover:border-accent hover:bg-primary/5 dark:hover:bg-accent/5 transition-colors"
+            className="flex flex-col items-center justify-center gap-3 w-full max-w-sm h-40 rounded-xl border-2 border-dashed border-border dark:border-white/20 hover:border-primary dark:hover:border-accent hover:bg-primary/5 dark:hover:bg-accent/5 transition-colors"
           >
-            <svg className="h-8 w-8 text-muted dark:text-white/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg className="h-10 w-10 text-muted dark:text-white/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
               <path strokeLinecap="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
             </svg>
-            <span className="text-sm font-medium text-muted dark:text-white/60">Open Camera</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex flex-col items-center justify-center gap-2 h-32 rounded-sign border-2 border-dashed border-border dark:border-white/20 hover:border-primary dark:hover:border-accent hover:bg-primary/5 dark:hover:bg-accent/5 transition-colors"
-          >
-            <svg className="h-8 w-8 text-muted dark:text-white/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-            </svg>
-            <span className="text-sm font-medium text-muted dark:text-white/60">Browse Files</span>
+            <span className="text-base font-medium text-muted dark:text-white/60">Open Camera</span>
           </button>
 
           <input
@@ -620,13 +605,6 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
             type="file"
             accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/3gpp,video/x-m4v"
             capture="environment"
-            onChange={onChange}
-            className="hidden"
-          />
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/3gpp,video/x-m4v"
             onChange={onChange}
             className="hidden"
           />

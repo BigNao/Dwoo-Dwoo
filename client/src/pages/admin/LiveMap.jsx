@@ -71,7 +71,11 @@ export default function LiveMap() {
                   <p className="text-xs">Confidence: {report.confidence_score}/100</p>
                   <p className="text-xs">{formatTimestamp(report.timestamp)}</p>
                   {report.photo_url && (
-                    <img src={report.photo_url} alt="Incident" className="w-full h-20 object-cover rounded mt-1" />
+                    /\.(mp4|webm|mov|3gp|m4v|avi)$/i.test(report.photo_url) ? (
+                      <video src={report.photo_url} controls className="w-full h-20 object-cover rounded mt-1" />
+                    ) : (
+                      <img src={report.photo_url} alt="Incident" className="w-full h-20 object-cover rounded mt-1" />
+                    )
                   )}
                   <p className="text-xs mt-1">{report.description}</p>
                   <button
