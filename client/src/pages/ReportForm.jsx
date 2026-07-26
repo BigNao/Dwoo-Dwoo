@@ -551,7 +551,13 @@ function StepPhoto({ photoPreview, photoFile, onChange, onRemove, fileInputRef, 
         }
 
         const blob = new Blob(chunks, { type: recorder.mimeType });
-        const ext = recorder.mimeType.includes("mp4") ? "mp4" : "webm";
+        const ext = (
+          recorder.mimeType.includes("mp4") ? "mp4" :
+          recorder.mimeType.includes("quicktime") ? "mov" :
+          recorder.mimeType.includes("3gpp") ? "3gp" :
+          recorder.mimeType.includes("x-m4v") ? "m4v" :
+          "webm"
+        );
         const file = new File([blob], `camera_${Date.now()}.${ext}`, { type: recorder.mimeType });
         stopCamera();
         onChange({ target: { files: [file] } });

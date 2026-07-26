@@ -19,13 +19,38 @@ const imageUpload = multer({
   },
 });
 
+const VIDEO_EXTENSIONS = new Set([
+  ".mp4", ".webm", ".mov", ".qt", ".3gp", ".3g2",
+  ".avi", ".mkv", ".m4v", ".mpg", ".mpeg", ".flv", ".wmv",
+]);
+
+function isSupportedVideo(file) {
+  const mimeBase = (file.mimetype || "").split(";")[0].trim().toLowerCase();
+  if (mimeBase.startsWith("video/")) return true;
+
+  if (file.originalname) {
+    const dot = file.originalname.lastIndexOf(".");
+    if (dot !== -1) {
+      const ext = file.originalname.slice(dot).toLowerCase();
+      if (VIDEO_EXTENSIONS.has(ext)) return true;
+    }
+  }
+
+  return false;
+}
+
 const videoUpload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("video/")) {
+    if (isSupportedVideo(file)) {
       cb(null, true);
     } else {
+      console.log("[uploadVideo] Rejected:", {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+      });
       cb(
         new Error(
           "Unsupported video format. Please use MP4, WEBM, MOV, 3GP, or AVI."
